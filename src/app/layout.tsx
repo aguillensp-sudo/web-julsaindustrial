@@ -25,9 +25,41 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Datos estructurados Organization (SEO on-page, fase2 §4).
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Julsa Industrial S.A.",
+    url: "https://julsaindustrial.com",
+    telephone: "+53 72636260",
+    description:
+      "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes.",
+    foundingDate: "2010",
+    address: [
+      {
+        "@type": "PostalAddress",
+        streetAddress: "c/202, #1918, e/19 y 21, Siboney, Playa",
+        addressLocality: "La Habana",
+        addressCountry: "CU",
+      },
+      {
+        "@type": "PostalAddress",
+        streetAddress: "c/Núñez de Balboa, 118, 1ºI",
+        addressLocality: "Madrid",
+        addressCountry: "ES",
+      },
+    ],
+  };
+
   return (
     <html lang="es" className={`${openSans.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }
