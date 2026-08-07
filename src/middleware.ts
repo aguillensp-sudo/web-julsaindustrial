@@ -40,11 +40,25 @@ async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  // Proteger portal: requiere sesión.
-  if (path.startsWith("/portal") && !user) {
+  // Rutas de auth accesibles sin sesión (no se protegen).
+  const isAuthRoute =
+    path === "/portal/login" ||
+    path === "/portal/registro" ||
+    path === "/portal/recuperar";
+
+  // Proteger portal: requiere sesión (salvo las rutas de auth).
+  if (path.startsWith("/portal") && !isAuthRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/portal/login";
     url.searchParams.set("redirect", path);
+    return NextResponse.redirect(url);
+  }
+
+  // Si ya hay sesión y el usuario visita una ruta de auth, llevarlo al portal.
+  if (isAuthRoute && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/portal";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 
