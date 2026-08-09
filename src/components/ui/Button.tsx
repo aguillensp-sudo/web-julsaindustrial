@@ -1,8 +1,10 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 /**
- * Botón de acción. Naranja (--accent) con texto blanco bold ≥16px
- * para cumplir WCAG AA (ratio ~3.2:1 supera el umbral de texto grande).
+ * Botón de acción. text-base con el root en 14px (globals.css) es texto
+ * normal, no "grande" (necesitaría ≥18.66px bold) — así que el fondo debe
+ * cumplir 4.5:1 con blanco, no el umbral relajado de 3:1. --accent
+ * (#e76f00) solo da 3.15:1; --accent-deep (#b5520a) da 5.03:1.
  * fase3-design §1.
  */
 type Variant = "primary" | "secondary" | "ghost";
@@ -12,9 +14,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  // Naranja del brief; texto en bold 16px para contraste AA.
   primary:
-    "bg-[var(--accent)] text-white font-bold hover:bg-[var(--accent-deep)]",
+    "bg-[var(--accent-deep)] text-white font-bold hover:bg-[var(--accent-deeper)]",
   secondary:
     "bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] hover:border-[var(--text)]",
   ghost: "bg-transparent text-[var(--link)] hover:underline",

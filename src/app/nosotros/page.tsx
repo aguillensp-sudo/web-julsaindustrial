@@ -45,7 +45,7 @@ export default function NosotrosPage() {
       <main className="flex-1">
         <Section>
           <SectionLabel>Nosotros</SectionLabel>
-          <SectionTitle>Empresa española radicada en Cuba desde 2010</SectionTitle>
+          <SectionTitle as="h1">Empresa española radicada en Cuba desde 2010</SectionTitle>
           <p className="mt-2 max-w-2xl">
             Julsa Industrial se dedica a la importación y distribución de
             combustibles, materias primas para la industria y equipamiento

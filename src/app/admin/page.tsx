@@ -30,7 +30,7 @@ const quickLinks = [
 export default function AdminPage() {
   return (
     <div>
-      <SectionTitle>Panel de administración</SectionTitle>
+      <SectionTitle as="h1">Panel de administración</SectionTitle>
       <p className="text-[var(--text)] mb-8">
         Bienvenido al panel de administración de Julsa Industrial.
       </p>

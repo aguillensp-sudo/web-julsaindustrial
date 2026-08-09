@@ -39,6 +39,8 @@ export function HeroReel() {
       className="bg-[var(--ink)] text-white"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
       aria-roledescription="carousel"
       aria-label="Líneas de producto de Julsa Industrial"
     >
@@ -57,7 +59,7 @@ export function HeroReel() {
           </p>
           <a
             href="/portal/login"
-            className="mt-6 inline-flex no-underline items-center rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold px-5 py-2"
+            className="mt-6 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2"
           >
             Acceso clientes →
           </a>
@@ -68,8 +70,11 @@ export function HeroReel() {
           {SLIDES.map((slide, i) => (
             <div
               key={slide.title}
+              id={`hero-slide-${i}`}
+              role="tabpanel"
+              aria-labelledby={`hero-tab-${i}`}
               className={`flex-1 rounded border border-white/10 bg-white/5 p-4 transition-opacity ${
-                i === index ? "opacity-100" : "opacity-40"
+                i === index ? "opacity-100" : "opacity-75"
               }`}
               aria-hidden={i !== index}
             >
@@ -79,20 +84,27 @@ export function HeroReel() {
           ))}
         </div>
 
-        {/* Indicadores */}
+        {/* Indicadores. Botones de 44x44 clicables (WCAG 2.5.8) con un
+            punto visual de 8px dentro. */}
         <div className="flex gap-2 mt-4" role="tablist" aria-label="Seleccionar slide">
           {SLIDES.map((slide, i) => (
             <button
               key={slide.title}
+              id={`hero-tab-${i}`}
               type="button"
               role="tab"
               aria-selected={i === index}
+              aria-controls={`hero-slide-${i}`}
               aria-label={slide.title}
               onClick={() => setIndex(i)}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                i === index ? "bg-[var(--accent)]" : "bg-white/30"
-              }`}
-            />
+              className="flex h-6 w-6 items-center justify-center"
+            >
+              <span
+                className={`h-2 w-2 rounded-full transition-colors ${
+                  i === index ? "bg-[var(--accent)]" : "bg-white/30"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

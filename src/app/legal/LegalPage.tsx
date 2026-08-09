@@ -21,7 +21,7 @@ export function LegalPage({
       <Header />
       <main className="flex-1">
         <Section>
-          <SectionTitle>{title}</SectionTitle>
+          <SectionTitle as="h1">{title}</SectionTitle>
           {lastUpdated && (
             <p className="text-xs text-[var(--text)]/60 mt-1">
               Última actualización: {lastUpdated}

@@ -31,8 +31,9 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <Field label="Email" type="email" value={email} onChange={setEmail} required />
+      <Field id="login-email" label="Email" type="email" value={email} onChange={setEmail} required />
       <Field
+        id="login-password"
         label="Contraseña"
         type="password"
         value={password}
@@ -47,7 +48,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold px-5 py-2 disabled:opacity-50"
+        className="w-full rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2 disabled:opacity-50"
       >
         {loading ? "Entrando…" : "Entrar"}
       </button>
@@ -56,12 +57,14 @@ export function LoginForm() {
 }
 
 function Field({
+  id,
   label,
   type,
   value,
   onChange,
   required,
 }: {
+  id: string;
   label: string;
   type: string;
   value: string;
@@ -70,13 +73,16 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-1">{label}</label>
+      <label htmlFor={id} className="block text-sm font-semibold mb-1">
+        {label}
+      </label>
       <input
+        id={id}
         type={type}
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)] outline-none"
+        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
       />
     </div>
   );

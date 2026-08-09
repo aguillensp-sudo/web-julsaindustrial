@@ -71,12 +71,12 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <Field label="Razón social" value={form.company_name} onChange={(v) => set("company_name", v)} required />
-      <Field label="Persona de contacto" value={form.contact_name} onChange={(v) => set("contact_name", v)} required />
-      <Field label="Email" type="email" value={form.email} onChange={(v) => set("email", v)} required />
-      <Field label="Teléfono" value={form.phone} onChange={(v) => set("phone", v)} />
-      <Field label="Ubicación / sede" value={form.location} onChange={(v) => set("location", v)} />
-      <Field label="Contraseña (mín. 8 caracteres)" type="password" value={form.password} onChange={(v) => set("password", v)} required />
+      <Field id="register-company-name" label="Razón social" value={form.company_name} onChange={(v) => set("company_name", v)} required />
+      <Field id="register-contact-name" label="Persona de contacto" value={form.contact_name} onChange={(v) => set("contact_name", v)} required />
+      <Field id="register-email" label="Email" type="email" value={form.email} onChange={(v) => set("email", v)} required />
+      <Field id="register-phone" label="Teléfono" value={form.phone} onChange={(v) => set("phone", v)} />
+      <Field id="register-location" label="Ubicación / sede" value={form.location} onChange={(v) => set("location", v)} />
+      <Field id="register-password" label="Contraseña (mín. 8 caracteres)" type="password" value={form.password} onChange={(v) => set("password", v)} required />
       {error && (
         <p className="text-sm text-red-700" role="alert">
           {error}
@@ -85,7 +85,7 @@ export function RegisterForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold px-5 py-2 disabled:opacity-50"
+        className="w-full rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2 disabled:opacity-50"
       >
         {loading ? "Creando…" : "Crear cuenta"}
       </button>
@@ -94,12 +94,14 @@ export function RegisterForm() {
 }
 
 function Field({
+  id,
   label,
   type = "text",
   value,
   onChange,
   required,
 }: {
+  id: string;
   label: string;
   type?: string;
   value: string;
@@ -108,13 +110,16 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-1">{label}</label>
+      <label htmlFor={id} className="block text-sm font-semibold mb-1">
+        {label}
+      </label>
       <input
+        id={id}
         type={type}
         value={value}
         required={required}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)] outline-none"
+        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
       />
     </div>
   );

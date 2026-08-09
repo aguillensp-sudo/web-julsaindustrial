@@ -166,7 +166,7 @@ function ProductFormInner({ product }: { product?: Product }) {
           name="image"
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          className="text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-[var(--accent)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white"
+          className="text-sm text-gray-600 file:mr-3 file:rounded file:border-0 file:bg-[var(--accent-deep)] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white"
         />
         <p className="mt-1 text-xs text-gray-500">
           JPG, PNG o WebP. Máximo 5MB.

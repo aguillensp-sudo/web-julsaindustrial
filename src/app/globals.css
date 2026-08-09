@@ -11,12 +11,16 @@
   --surface: #ffffff;
   --text: #333333;
   --ink: #1a1a1a; /* "negro" del menú */
-  --link: #008cba;
+  /* #008cba (brief) no llega a 4.5:1 sobre --bg/--surface con el body a
+     14px base (WCAG AA §1.4.3, fase C accesibilidad). Mismo tono, oscurecido
+     lo justo para pasar (5.76:1 sobre --bg, 4.83:1 sobre --surface). */
+  --link: #00688a;
   --border: #cccccc;
   --shadow: #dddddd;
   /* Acento naranja (propuesta fase3 §1; no estaba en hex en el brief) */
   --accent: #e76f00;
-  --accent-deep: #b5520a; /* hover / texto naranja legible sobre blanco */
+  --accent-deep: #b5520a; /* texto/fondo naranja legible sobre blanco (5.03:1) */
+  --accent-deeper: #8b3f08; /* hover de accent-deep, siempre más oscuro */
 
   /* Tipografía del brief: Open Sans, base 14px */
   --font-sans: var(--font-open-sans), Arial, Helvetica, sans-serif;
@@ -33,6 +37,7 @@
   --color-shadow: var(--shadow);
   --color-accent: var(--accent);
   --color-accent-deep: var(--accent-deep);
+  --color-accent-deeper: var(--accent-deeper);
   --font-sans: var(--font-open-sans), Arial, Helvetica, sans-serif;
 }
 
@@ -51,9 +56,11 @@ a {
   color: var(--link);
 }
 
-/* Focus visible accesible (WCAG AA) — outline naranja */
+/* Focus visible accesible (WCAG AA) — outline naranja.
+   --accent-deep, no --accent: sobre --bg #f5f5f5 --accent solo da 2.89:1
+   (falla el 3:1 de 1.4.11 Non-text Contrast); --accent-deep da 4.62:1. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-deep);
   outline-offset: 2px;
 }
 

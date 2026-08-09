@@ -86,7 +86,7 @@ export default function Home() {
             </p>
             <Link
               href="/portal/registro"
-              className="mt-3 inline-flex no-underline items-center rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold px-4 py-2"
+              className="mt-3 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-4 py-2"
             >
               Crear usuario →
             </Link>

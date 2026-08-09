@@ -15,7 +15,7 @@ export function ProductCard({ item }: { item: CatalogItem }) {
           <PhotoPlaceholder label={item.name} />
         )}
       </div>
-      <h3 className="font-bold text-lg text-[var(--text)]">{item.name}</h3>
+      <h2 className="font-bold text-lg text-[var(--text)]">{item.name}</h2>
       <p className="text-sm mt-1 flex-1">{item.description}</p>
       {item.specs && item.specs.length > 0 && (
         <ul className="mt-3 space-y-1">
@@ -42,7 +42,7 @@ function PhotoPlaceholder({ label }: { label: string }) {
         <circle cx="9" cy="10" r="1.5" fill="currentColor" />
         <path d="M3 17l5-4 4 3 3-2 6 5" stroke="currentColor" strokeWidth="1.5" fill="none" />
       </svg>
-      <span className="text-xs mt-2">{label}</span>
+      <span className="text-xs mt-2 text-[var(--text)]">{label}</span>
     </div>
   );
 }

@@ -71,11 +71,10 @@ export function DistributionMap({ compact = false }: { compact?: boolean }) {
   );
 
   return (
-    <div aria-label="Red de distribución de Julsa en Cuba">
+    <div role="group" aria-label="Red de distribución de Julsa en Cuba">
       <svg
         viewBox="0 0 600 300"
         className="w-full h-auto"
-        role="img"
         aria-hidden="true"
       >
         {/* Silueta estilizada de Cuba (forma simplificada, no cartográfica) */}

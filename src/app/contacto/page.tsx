@@ -33,7 +33,7 @@ export default function ContactoPage() {
       <main className="flex-1">
         <Section>
           <SectionLabel>Contacto</SectionLabel>
-          <SectionTitle>Hablemos</SectionTitle>
+          <SectionTitle as="h1">Hablemos</SectionTitle>
           <div className="grid gap-6 md:grid-cols-2 mt-4">
             <Card>
               <ContactForm />

@@ -62,7 +62,7 @@ export function ContactForm() {
           name="message"
           required
           rows={4}
-          className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-[var(--text)] focus:border-[var(--accent)] outline-none"
+          className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-[var(--text)] focus:border-[var(--accent)]"
         />
       </div>
       <Button type="submit" disabled={status === "submitting"}>
@@ -106,7 +106,7 @@ function Field({
         name={name}
         type={type}
         required={required}
-        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-[var(--text)] focus:border-[var(--accent)] outline-none"
+        className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-[var(--text)] focus:border-[var(--accent)]"
       />
     </div>
   );

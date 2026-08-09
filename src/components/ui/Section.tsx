@@ -31,17 +31,23 @@ export function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-/** Encabezado de bloque (Heading, Bold 22-28px). */
+/**
+ * Encabezado de bloque (Heading, Bold 22-28px).
+ * `as` permite usarlo como h1 cuando es el título principal de la página
+ * (WCAG 1.3.1: cada página debe tener un h1, no empezar en h2).
+ */
 export function SectionTitle({
   children,
   className = "",
+  as: Tag = "h2",
 }: {
   children: ReactNode;
   className?: string;
+  as?: "h1" | "h2";
 }) {
   return (
-    <h2 className={`text-2xl font-bold text-[var(--text)] ${className}`}>
+    <Tag className={`text-2xl font-bold text-[var(--text)] ${className}`}>
       {children}
-    </h2>
+    </Tag>
   );
 }

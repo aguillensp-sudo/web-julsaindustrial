@@ -41,8 +41,8 @@ export default async function ProductDetailPage({
         ← Catálogo
       </Link>
       <div className="grid gap-6 md:grid-cols-2 mt-4">
-        <div className="aspect-square rounded bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--border)]">
-          <span className="text-sm">{product.name}</span>
+        <div className="aspect-square rounded bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center">
+          <span className="text-sm text-[var(--text)]">{product.name}</span>
         </div>
         <div>
           <h1 className="text-2xl font-bold">{product.name}</h1>

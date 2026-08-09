@@ -19,7 +19,7 @@ export function CatalogPage({ line }: { line: ProductLine }) {
       <main className="flex-1">
         <Section>
           <SectionLabel>Catálogo</SectionLabel>
-          <SectionTitle>{meta.title}</SectionTitle>
+          <SectionTitle as="h1">{meta.title}</SectionTitle>
           <p className="mt-2 max-w-2xl">{meta.blurb}</p>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mt-6">
             {items.map((item) => (

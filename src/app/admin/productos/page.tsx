@@ -79,7 +79,7 @@ export default async function AdminProductsPage() {
                                 className="h-full w-full object-cover"
                               />
                             ) : (
-                              <div className="flex h-full w-full items-center justify-center text-gray-400">
+                              <div className="flex h-full w-full items-center justify-center text-gray-600">
                                 <span className="text-xs">Sin imagen</span>
                               </div>
                             )}
@@ -90,8 +90,8 @@ export default async function AdminProductsPage() {
                               <span
                                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                                   product.is_active
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-500"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-gray-100 text-gray-700"
                                 }`}
                               >
                                 {product.is_active ? "Activo" : "Inactivo"}

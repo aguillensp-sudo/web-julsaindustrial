@@ -40,7 +40,7 @@ export function Header() {
         </nav>
         <Link
           href="/portal/login"
-          className="ml-auto no-underline inline-flex items-center rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold text-sm px-4 py-1.5"
+          className="ml-auto no-underline inline-flex items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold text-sm px-4 py-1.5"
         >
           Acceso clientes
         </Link>

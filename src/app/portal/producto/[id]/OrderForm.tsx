@@ -43,7 +43,7 @@ export function OrderForm({ productId }: { productId: string }) {
           min={1}
           defaultValue={1}
           required
-          className="w-24 rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)] outline-none"
+          className="w-24 rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
         />
       </div>
       <div>
@@ -54,7 +54,7 @@ export function OrderForm({ productId }: { productId: string }) {
           id="notes"
           name="notes"
           rows={2}
-          className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)] outline-none"
+          className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
         />
       </div>
       {state && !state.ok && (
@@ -65,7 +65,7 @@ export function OrderForm({ productId }: { productId: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white font-bold px-5 py-2 disabled:opacity-50"
+        className="rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2 disabled:opacity-50"
       >
         {pending ? "Creando…" : "Crear pedido"}
       </button>

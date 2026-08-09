@@ -27,7 +27,7 @@ export function ProofUpload({ orderId }: { orderId: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-bold px-3 py-1.5 disabled:opacity-50"
+        className="rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white text-xs font-bold px-3 py-1.5 disabled:opacity-50"
       >
         {pending ? "Subiendo…" : "Subir"}
       </button>

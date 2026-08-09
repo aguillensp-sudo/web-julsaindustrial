@@ -65,8 +65,8 @@ export default async function AdminPedidosPage() {
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       order.status === "ready_for_delivery"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-amber-100 text-amber-700"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-amber-100 text-amber-800"
                     }`}
                   >
                     {ORDER_STATUS_LABEL[order.status]}
