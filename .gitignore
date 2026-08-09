@@ -10,9 +10,8 @@ build/
 dist/
 
 # env
-.env
-.env.local
-.env.*.local
+.env*
+!.env.example
 
 # supabase
 supabase/.temp
