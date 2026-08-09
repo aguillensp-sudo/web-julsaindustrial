@@ -21,6 +21,7 @@ export default async function ProductDetailPage({
     .from("products")
     .select("id, line, name, description, price_usd, unit, stock")
     .eq("id", id)
+    .eq("is_active", true)
     .maybeSingle();
 
   if (!product) {

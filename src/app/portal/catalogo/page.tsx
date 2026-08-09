@@ -14,6 +14,7 @@ export default async function CatalogoPage() {
   const { data: products } = await supabase
     .from("products")
     .select("id, line, name, description, image_path, price_usd, unit, stock")
+    .eq("is_active", true)
     .order("line", { ascending: true })
     .order("name", { ascending: true });
 

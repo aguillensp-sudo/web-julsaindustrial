@@ -23,6 +23,7 @@ export interface Product {
   price_usd: number;
   unit: string;
   stock: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }

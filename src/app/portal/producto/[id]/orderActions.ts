@@ -46,6 +46,7 @@ export async function createOrder(
     .from("products")
     .select("id, price_usd, stock")
     .eq("id", product_id)
+    .eq("is_active", true)
     .maybeSingle();
   if (pErr || !product)
     return { ok: false, error: "Producto no encontrado." };
