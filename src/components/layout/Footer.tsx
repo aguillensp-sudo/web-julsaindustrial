@@ -16,19 +16,19 @@ export function Footer() {
         </div>
         <nav aria-label="Mapa web">
           <p className="font-bold text-white mb-2">Web</p>
-          <ul className="space-y-1">
+          <ul className="-mx-1">
             <li>
-              <Link href="/nosotros" className="text-white/80 hover:text-white no-underline">
+              <Link href="/nosotros" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Nosotros
               </Link>
             </li>
             <li>
-              <Link href="/contacto" className="text-white/80 hover:text-white no-underline">
+              <Link href="/contacto" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Contacto
               </Link>
             </li>
             <li>
-              <Link href="/portal/login" className="text-white/80 hover:text-white no-underline">
+              <Link href="/portal/login" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Acceso clientes
               </Link>
             </li>
@@ -36,19 +36,19 @@ export function Footer() {
         </nav>
         <nav aria-label="Legal">
           <p className="font-bold text-white mb-2">Legal</p>
-          <ul className="space-y-1">
+          <ul className="-mx-1">
             <li>
-              <Link href="/legal/aviso-legal" className="text-white/80 hover:text-white no-underline">
+              <Link href="/legal/aviso-legal" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Aviso legal
               </Link>
             </li>
             <li>
-              <Link href="/legal/privacidad" className="text-white/80 hover:text-white no-underline">
+              <Link href="/legal/privacidad" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Política de privacidad
               </Link>
             </li>
             <li>
-              <Link href="/legal/cookies" className="text-white/80 hover:text-white no-underline">
+              <Link href="/legal/cookies" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Política de cookies
               </Link>
             </li>

@@ -45,23 +45,33 @@ html {
   font-size: var(--font-size-base);
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-}
+/*
+ * @layer base: en Tailwind v4 las utilidades (text-white, text-white/80...)
+ * viven en @layer utilities, que SIEMPRE gana sobre CSS sin capa aunque este
+ * tenga menor especificidad. Sin este @layer, `a { color: var(--link) }`
+ * pintaba de azul enlaces marcados text-white/text-white/80 en todo el sitio
+ * (Header, Footer, HeroReel) — bug real detectado por Lighthouse
+ * color-contrast, no solo un problema de números.
+ */
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
 
-/* Links de texto usan el azul del brief */
-a {
-  color: var(--link);
-}
+  /* Links de texto usan el azul del brief */
+  a {
+    color: var(--link);
+  }
 
-/* Focus visible accesible (WCAG AA) — outline naranja.
-   --accent-deep, no --accent: sobre --bg #f5f5f5 --accent solo da 2.89:1
-   (falla el 3:1 de 1.4.11 Non-text Contrast); --accent-deep da 4.62:1. */
-:focus-visible {
-  outline: 2px solid var(--accent-deep);
-  outline-offset: 2px;
+  /* Focus visible accesible (WCAG AA) — outline naranja.
+     --accent-deep, no --accent: sobre --bg #f5f5f5 --accent solo da 2.89:1
+     (falla el 3:1 de 1.4.11 Non-text Contrast); --accent-deep da 4.62:1. */
+  :focus-visible {
+    outline: 2px solid var(--accent-deep);
+    outline-offset: 2px;
+  }
 }
 
 /* Respeta reduced-motion: el signature (mapa-red) y el hero reel lo usan */
