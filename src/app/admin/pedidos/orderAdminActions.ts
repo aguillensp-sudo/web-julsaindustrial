@@ -2,11 +2,16 @@
 
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentAdmin } from "@/lib/auth/admin";
 import { revalidatePath } from "next/cache";
 
 export type SignedUrlResult = { ok: true; url: string } | { ok: false; error: string };
 
 export async function getProofSignedUrl(filePath: string): Promise<SignedUrlResult> {
+  if (!(await getCurrentAdmin())) {
+    return { ok: false, error: "No autorizado." };
+  }
+
   if (!filePath.trim()) {
     return { ok: false, error: "Ruta de fichero inválida." };
   }
@@ -26,6 +31,10 @@ export async function getProofSignedUrl(filePath: string): Promise<SignedUrlResu
 export type MarkReadyResult = { ok: true } | { ok: false; error: string };
 
 export async function markReadyForDelivery(orderId: string): Promise<MarkReadyResult> {
+  if (!(await getCurrentAdmin())) {
+    return { ok: false, error: "No autorizado." };
+  }
+
   const parsed = z.string().uuid().safeParse(orderId);
   if (!parsed.success) {
     return { ok: false, error: "ID de pedido inválido." };

@@ -1,10 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createProduct, updateProduct, setProductActive } from "./productActions";
 
-const { mockCreateAdminClient } = vi.hoisted(() => ({ mockCreateAdminClient: vi.fn() }));
+const { mockCreateAdminClient, mockGetCurrentAdmin } = vi.hoisted(() => ({
+  mockCreateAdminClient: vi.fn(),
+  mockGetCurrentAdmin: vi.fn(),
+}));
 
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: mockCreateAdminClient }));
+vi.mock("@/lib/auth/admin", () => ({ getCurrentAdmin: mockGetCurrentAdmin }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+
+mockGetCurrentAdmin.mockResolvedValue({ user_id: "admin-1", email: "admin@example.com" });
 
 function createMockQueryBuilder() {
   return {
@@ -204,19 +210,53 @@ describe("setProductActive", () => {
   it("should set product active status", async () => {
     queryBuilder.eq.mockResolvedValue({ error: null });
 
-    const result = await setProductActive("product-5", false);
+    const result = await setProductActive("f47ac10b-58cc-4372-a567-0e02b2c3d479", false);
 
     expect(result).toEqual({ ok: true });
     expect(queryBuilder.update).toHaveBeenCalledWith({ is_active: false });
-    expect(queryBuilder.eq).toHaveBeenCalledWith("id", "product-5");
+    expect(queryBuilder.eq).toHaveBeenCalledWith("id", "f47ac10b-58cc-4372-a567-0e02b2c3d479");
   });
 
   it("should fail when update returns error", async () => {
     queryBuilder.eq.mockResolvedValue({ error: new Error("db error") });
 
-    const result = await setProductActive("product-5", true);
+    const result = await setProductActive("f47ac10b-58cc-4372-a567-0e02b2c3d479", true);
 
     expect(result).toEqual({ ok: false, error: "Error al cambiar el estado del producto." });
+  });
+
+  it("rejects invalid product id", async () => {
+    const result = await setProductActive("not-a-uuid", true);
+    expect(result).toEqual({ ok: false, error: "ID de producto inválido." });
+    expect(queryBuilder.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("authorization", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetCurrentAdmin.mockResolvedValueOnce(null);
+  });
+
+  it("createProduct rejects non-admin callers", async () => {
+    const formData = createValidFormData();
+    const result = await createProduct(formData);
+    expect(result).toEqual({ ok: false, error: "No autorizado." });
+    expect(mockCreateAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("updateProduct rejects non-admin callers", async () => {
+    const formData = createValidFormData();
+    formData.set("id", "f47ac10b-58cc-4372-a567-0e02b2c3d479");
+    const result = await updateProduct(formData);
+    expect(result).toEqual({ ok: false, error: "No autorizado." });
+    expect(mockCreateAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("setProductActive rejects non-admin callers", async () => {
+    const result = await setProductActive("f47ac10b-58cc-4372-a567-0e02b2c3d479", true);
+    expect(result).toEqual({ ok: false, error: "No autorizado." });
+    expect(mockCreateAdminClient).not.toHaveBeenCalled();
   });
 });
 

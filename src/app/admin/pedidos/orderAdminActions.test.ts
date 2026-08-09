@@ -1,10 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getProofSignedUrl, markReadyForDelivery } from "./orderAdminActions";
 
-const { mockCreateAdminClient } = vi.hoisted(() => ({ mockCreateAdminClient: vi.fn() }));
+const { mockCreateAdminClient, mockGetCurrentAdmin } = vi.hoisted(() => ({
+  mockCreateAdminClient: vi.fn(),
+  mockGetCurrentAdmin: vi.fn(),
+}));
 
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: mockCreateAdminClient }));
+vi.mock("@/lib/auth/admin", () => ({ getCurrentAdmin: mockGetCurrentAdmin }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+
+mockGetCurrentAdmin.mockResolvedValue({ user_id: "admin-1", email: "admin@example.com" });
 
 function createMockQueryBuilder() {
   return {
@@ -151,5 +157,24 @@ describe("markReadyForDelivery", () => {
     const result = await markReadyForDelivery("f47ac10b-58cc-4372-a567-0e02b2c3d479");
 
     expect(result).toEqual({ ok: false, error: "No se pudo actualizar el estado del pedido." });
+  });
+});
+
+describe("authorization", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetCurrentAdmin.mockResolvedValueOnce(null);
+  });
+
+  it("getProofSignedUrl rejects non-admin callers", async () => {
+    const result = await getProofSignedUrl("proofs/example.pdf");
+    expect(result).toEqual({ ok: false, error: "No autorizado." });
+    expect(mockCreateAdminClient).not.toHaveBeenCalled();
+  });
+
+  it("markReadyForDelivery rejects non-admin callers", async () => {
+    const result = await markReadyForDelivery("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+    expect(result).toEqual({ ok: false, error: "No autorizado." });
+    expect(mockCreateAdminClient).not.toHaveBeenCalled();
   });
 });

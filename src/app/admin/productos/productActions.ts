@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentAdmin } from "@/lib/auth/admin";
 import { revalidatePath } from "next/cache";
 
 const productSchema = z.object({
@@ -56,6 +57,10 @@ async function validateAndUploadImage(
 }
 
 export async function createProduct(formData: FormData): Promise<ProductFormResult> {
+  if (!(await getCurrentAdmin())) {
+    return { ok: false, error: "No autorizado." };
+  }
+
   const rawData = {
     line: formData.get("line"),
     name: formData.get("name"),
@@ -106,6 +111,10 @@ export async function createProduct(formData: FormData): Promise<ProductFormResu
 }
 
 export async function updateProduct(formData: FormData): Promise<ProductFormResult> {
+  if (!(await getCurrentAdmin())) {
+    return { ok: false, error: "No autorizado." };
+  }
+
   const idResult = z.string().uuid().safeParse(formData.get("id"));
 
   if (!idResult.success) {
@@ -170,11 +179,20 @@ export async function setProductActive(
   productId: string,
   isActive: boolean
 ): Promise<ToggleActiveResult> {
+  if (!(await getCurrentAdmin())) {
+    return { ok: false, error: "No autorizado." };
+  }
+
+  const idResult = z.string().uuid().safeParse(productId);
+  if (!idResult.success) {
+    return { ok: false, error: "ID de producto inválido." };
+  }
+
   const supabase = createAdminClient();
   const { error } = await supabase
     .from("products")
     .update({ is_active: isActive })
-    .eq("id", productId);
+    .eq("id", idResult.data);
 
   if (error) {
     return { ok: false, error: "Error al cambiar el estado del producto." };
