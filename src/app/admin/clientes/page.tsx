@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { Customer, CustomerStatus } from "@/lib/db/types";
+import type { CustomerStatus } from "@/lib/db/types";
 import { CustomerStatusButton } from "./CustomerStatusButton";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,16 @@ const CUSTOMER_STATUS_LABEL: Record<CustomerStatus, string> = {
   pending_verification: "Pendiente de verificación",
   active: "Activo",
   suspended: "Suspendido",
+};
+
+type CustomerListRow = {
+  id: string;
+  company_name: string;
+  contact_name: string;
+  phone: string | null;
+  location: string | null;
+  status: CustomerStatus;
+  created_at: string;
 };
 
 export default async function AdminClientesPage() {
@@ -53,7 +63,7 @@ export default async function AdminClientesPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {customers.map((customer: Customer) => {
+          {(customers as CustomerListRow[]).map((customer) => {
             const email = emailMap.get(customer.id) ?? "—";
             return (
               <Card key={customer.id}>

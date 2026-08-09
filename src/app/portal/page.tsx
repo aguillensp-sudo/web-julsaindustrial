@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function PortalHome() {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/portal/login");
+  if (!customer.profile_completed) redirect("/portal/completar-perfil");
 
   const supabase = await createClient();
   const { data: orders } = await supabase

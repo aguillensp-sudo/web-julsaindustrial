@@ -35,6 +35,7 @@ export interface Customer {
   phone: string | null;
   location: string | null;
   status: CustomerStatus;
+  profile_completed: boolean;
   created_at: string;
 }
 
