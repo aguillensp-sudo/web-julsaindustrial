@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
@@ -97,27 +96,16 @@ export default function NosotrosPage() {
         <Section>
           <SectionLabel>Equipo y presencia</SectionLabel>
           <SectionTitle className="mb-4">Red de distribución</SectionTitle>
-          <div className="grid gap-6 md:grid-cols-2 items-start">
-            <div>
-              <p className="text-sm">
-                Contamos con un equipo cualificado y experimentado en el sector
-                industrial y energético, que forma parte de nuestra plantilla.
-              </p>
-              <p className="text-sm mt-3">
-                También contamos con una red de socios y distribuidores en Panamá
-                y República Dominicana, que nos permiten llegar a un amplio número
-                de clientes y ofrecerles un servicio personalizado.
-              </p>
-            </div>
-            <Card>
-              <Image
-                src="/images/mapa.png"
-                alt="Mapa de la red de distribución de Julsa Industrial en Panamá y República Dominicana"
-                width={600}
-                height={340}
-                className="w-full h-auto rounded"
-              />
-            </Card>
+          <div>
+            <p className="text-sm">
+              Contamos con un equipo cualificado y experimentado en el sector
+              industrial y energético, que forma parte de nuestra plantilla.
+            </p>
+            <p className="text-sm mt-3">
+              También contamos con una red de socios y distribuidores en Panamá
+              y República Dominicana, que nos permiten llegar a un amplio número
+              de clientes y ofrecerles un servicio personalizado.
+            </p>
           </div>
         </Section>
       </main>
