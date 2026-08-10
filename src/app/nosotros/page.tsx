@@ -8,11 +8,11 @@ import { Card } from "@/components/ui/Card";
 export const metadata: Metadata = {
   title: "Nosotros",
   description:
-    "Julsa Industrial: empresa española radicada en Cuba desde 2010. Historia, misión, visión y equipo.",
+    "Julsa Industrial: empresa española radicada en Panamá y República Dominicana desde 2010. Historia, misión, visión y equipo.",
 };
 
 const TIMELINE = [
-  { year: "2010", text: "Fundada en España. Primeras operaciones en Cuba." },
+  { year: "2010", text: "Fundada en España. Primeras operaciones en Panamá y República Dominicana." },
   {
     year: "2013",
     text: "Proveedor de referencia en rodamientos y elementos de transmisión para la industria.",
@@ -27,15 +27,15 @@ const TIMELINE = [
   },
   {
     year: "2021",
-    text: "Creación de Fawalt Investment S.L en España para financiamiento de proyectos de inversión en Cuba.",
+    text: "Creación de Fawalt Investment S.L en España para financiamiento de proyectos de inversión en Panamá y República Dominicana.",
   },
   { year: "2026", text: "Inicio del suministro de combustibles y gestión cooperada." },
 ];
 
 const MISSION = [
   "Ofrecer a nuestros clientes productos de calidad y de última generación, con el fin de contribuir al desarrollo sostenible y a la eficiencia energética en sus hogares y negocios.",
-  "Contribuir al desarrollo de Cuba a través de la importación y distribución de productos de alta calidad y tecnología.",
-  "A través de nuestros socios y distribuidores, crear una red sólida y estable para desarrollar nuestros negocios en Cuba, mejorando las condiciones de vida de los ciudadanos y de nuestros empleados directos e indirectos.",
+  "Contribuir al desarrollo de Panamá y República Dominicana a través de la importación y distribución de productos de alta calidad y tecnología.",
+  "A través de nuestros socios y distribuidores, crear una red sólida y estable para desarrollar nuestros negocios en Panamá y República Dominicana, mejorando las condiciones de vida de los ciudadanos y de nuestros empleados directos e indirectos.",
 ];
 
 export default function NosotrosPage() {
@@ -51,7 +51,7 @@ export default function NosotrosPage() {
           <p className="mt-2 max-w-2xl">
             Julsa Industrial es una empresa española que desde hace más de 20
             años se ha especializado en suministros de insumos y materias
-            primas para el sector estatal y privado de Cuba. Contamos con un
+            primas para el sector estatal y privado de Panamá y República Dominicana. Contamos con un
             equipo humano experimentado en las áreas de ingeniería y
             logística, así como en la gestión de proyectos y relaciones
             comerciales. Nuestro objetivo principal es ofrecer a nuestros
@@ -101,20 +101,18 @@ export default function NosotrosPage() {
             <div>
               <p className="text-sm">
                 Contamos con un equipo cualificado y experimentado en el sector
-                industrial y energético, que forma parte de nuestra plantilla en
-                las oficinas de La Habana.
+                industrial y energético, que forma parte de nuestra plantilla.
               </p>
               <p className="text-sm mt-3">
-                También contamos con una red de socios y distribuidores en todo el
-                país, que nos permiten llegar a un amplio número de clientes y
-                ofrecerles un servicio personalizado y de calidad en Cienfuegos,
-                Camagüey y Bayamo.
+                También contamos con una red de socios y distribuidores en Panamá
+                y República Dominicana, que nos permiten llegar a un amplio número
+                de clientes y ofrecerles un servicio personalizado.
               </p>
             </div>
             <Card>
               <Image
                 src="/images/mapa.png"
-                alt="Mapa de la red de distribución de Julsa Industrial en Cuba"
+                alt="Mapa de la red de distribución de Julsa Industrial en Panamá y República Dominicana"
                 width={600}
                 height={340}
                 className="w-full h-auto rounded"

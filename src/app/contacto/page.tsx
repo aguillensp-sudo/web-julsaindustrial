@@ -9,16 +9,10 @@ import { ContactForm } from "./ContactForm";
 export const metadata: Metadata = {
   title: "Contacto",
   description:
-    "Contacte con Julsa Industrial. Sedes en La Habana (Cuba) y Madrid (España). Tfno: +53 72636260.",
+    "Contacte con Julsa Industrial. Sede en Madrid (España). Tfno: +34 673 764987.",
 };
 
 const SEDES = [
-  {
-    city: "La Habana",
-    country: "Cuba",
-    address: "c/202, #1918, e/19 y 21, Siboney, Playa, La Habana, Cuba",
-    maps: "https://maps.app.goo.gl/kewUXkNbjRTr2mrN9",
-  },
   {
     city: "Madrid",
     country: "España",
@@ -51,7 +45,7 @@ export default function ContactoPage() {
                   />
                   <p className="font-bold">Julsa Industrial S.A.</p>
                 </div>
-                <p className="text-sm mt-2">Teléfono: +53 72636260</p>
+                <p className="text-sm mt-2">Teléfono: +34 673 764987</p>
                 <p className="text-sm mt-1">
                   <a href="mailto:administracion@julsaindustrial.com">
                     administracion@julsaindustrial.com

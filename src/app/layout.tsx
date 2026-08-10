@@ -13,11 +13,11 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://julsaindustrial.com"),
   title: {
-    default: "Julsa Industrial — Suministro industrial y energético para Cuba",
+    default: "Julsa Industrial — Suministro industrial y energético",
     template: "%s · Julsa Industrial",
   },
   description:
-    "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes. Empresa española radicada en Cuba desde 2010.",
+    "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes. Empresa española radicada en Panamá y República Dominicana desde 2010.",
 };
 
 export default function RootLayout({
@@ -31,21 +31,16 @@ export default function RootLayout({
     "@type": "Organization",
     name: "Julsa Industrial S.A.",
     url: "https://julsaindustrial.com",
-    telephone: "+53 72636260",
+    telephone: "+34 673 764987",
     description:
       "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes.",
     foundingDate: "2010",
     address: [
       {
         "@type": "PostalAddress",
-        streetAddress: "c/202, #1918, e/19 y 21, Siboney, Playa",
-        addressLocality: "La Habana",
-        addressCountry: "CU",
-      },
-      {
-        "@type": "PostalAddress",
-        streetAddress: "c/Núñez de Balboa, 118, 1ºI",
+        streetAddress: "Calle Núñez de Balboa, 118, 1i",
         addressLocality: "Madrid",
+        postalCode: "28006",
         addressCountry: "ES",
       },
     ],

@@ -13,7 +13,7 @@ export function RegisterBanner() {
           Para conocer en detalle los productos que suministramos, cree un
           usuario y acceda a su área personal desde la que podrá obtener el
           detalle de los productos. Anímese, entre y verifique{" "}
-          <strong>nuestros precios</strong>, los mejores en Cuba.
+          <strong>nuestros precios</strong>, los mejores en Panamá y República Dominicana.
         </p>
         <ComingSoonLink
           href="/portal/registro"

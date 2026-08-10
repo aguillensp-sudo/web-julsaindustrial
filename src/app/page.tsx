@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -57,30 +56,19 @@ export default function Home() {
           </div>
         </Section>
 
-        {/* Contacto / sedes (mapa compacto) */}
+        {/* Contacto / sedes */}
         <Section>
           <SectionLabel>Contacto y sedes</SectionLabel>
           <SectionTitle className="mb-4">Red de distribución</SectionTitle>
-          <div className="grid gap-6 md:grid-cols-2 items-center">
-            <div>
-              <p className="text-sm">
-                Sedes en <strong>La Habana</strong> (Cuba) y <strong>Madrid</strong>{" "}
-                (España), con red de socios y distribuidores en Cienfuegos,
-                Camagüey y Bayamo.
-              </p>
-              <Link href="/contacto" className="text-sm mt-3 inline-block no-underline">
-                Ver contacto →
-              </Link>
-            </div>
-            <Card>
-              <Image
-                src="/images/mapa.png"
-                alt="Mapa de la red de distribución de Julsa Industrial en Cuba"
-                width={600}
-                height={340}
-                className="w-full h-auto rounded"
-              />
-            </Card>
+          <div>
+            <p className="text-sm">
+              Sedes en <strong>Panamá</strong> y <strong>España</strong> y una red
+              de distribuidores por <strong>Panamá</strong> y{" "}
+              <strong>República Dominicana</strong>.
+            </p>
+            <Link href="/contacto" className="text-sm mt-3 inline-block no-underline">
+              Ver contacto →
+            </Link>
           </div>
         </Section>
 

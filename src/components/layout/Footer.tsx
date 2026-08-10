@@ -12,7 +12,7 @@ export function Footer() {
       <div className="max-w-[1200px] mx-auto px-6 py-8 grid gap-8 md:grid-cols-3 text-sm">
         <div>
           <p className="font-bold text-white mb-2">Julsa Industrial S.A.</p>
-          <p>Tfno: +53 72636260</p>
+          <p>Tfno: +34 673 764987</p>
           <p>
             <a
               href="mailto:administracion@julsaindustrial.com"
@@ -21,7 +21,7 @@ export function Footer() {
               administracion@julsaindustrial.com
             </a>
           </p>
-          <p>La Habana, Cuba · Madrid, España</p>
+          <p>Calle Núñez de Balboa, 118, 1i, 28006, Madrid, España</p>
         </div>
         <nav aria-label="Mapa web">
           <p className="font-bold text-white mb-2">Web</p>
