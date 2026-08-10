@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
@@ -12,9 +13,10 @@ import { ComingSoonLink } from "@/components/ComingSoonLink";
  * hasta que se sustituyan por las fotos en /public.
  */
 const SLIDES = [
-  { title: "Combustibles", subtitle: "ISO tanques y distribución de GLP" },
-  { title: "Energía solar", subtitle: "Placas fotovoltaicas y almacenamiento" },
-  { title: "Materias primas", subtitle: "Insumos para la industria" },
+  { title: "Combustibles", subtitle: "ISO tanques y distribución de GLP", href: "/combustibles" },
+  { title: "Equipamientos energéticos", subtitle: "Placas fotovoltaicas y almacenamiento", href: "/equipamiento-energetico" },
+  { title: "Autopartes", subtitle: "Baterías, neumáticos y lubricantes", href: "/autopartes" },
+  { title: "Materias primas", subtitle: "Insumos para la industria", href: "/materias-primas" },
 ];
 
 export function HeroReel() {
@@ -55,8 +57,7 @@ export function HeroReel() {
           </h1>
           <p className="mt-4 text-white/80">
             Importación y distribución de combustibles, materias primas,
-            equipamiento energético y autopartes. Empresa española radicada en
-            Cuba desde 2010.
+            equipamiento energético y autopartes.
           </p>
           <ComingSoonLink
             href="/portal/login"
@@ -69,19 +70,20 @@ export function HeroReel() {
         {/* Slides temáticos (placeholder hasta fotos de Alvaro) */}
         <div className="relative z-0 mt-8 flex gap-3" aria-live="polite">
           {SLIDES.map((slide, i) => (
-            <div
+            <Link
               key={slide.title}
+              href={slide.href}
               id={`hero-slide-${i}`}
               role="tabpanel"
               aria-labelledby={`hero-tab-${i}`}
-              className={`flex-1 rounded border border-white/10 bg-white/5 p-4 transition-opacity ${
+              className={`flex-1 rounded border border-white/10 bg-white/5 p-4 no-underline text-white transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.35)] hover:border-white/30 ${
                 i === index ? "opacity-100" : "opacity-75"
               }`}
               aria-hidden={i !== index}
             >
               <p className="font-bold">{slide.title}</p>
               <p className="text-sm text-white/70">{slide.subtitle}</p>
-            </div>
+            </Link>
           ))}
         </div>
 

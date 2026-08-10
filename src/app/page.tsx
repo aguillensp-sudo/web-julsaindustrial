@@ -49,7 +49,7 @@ export default function Home() {
               >
                 <Card className="h-full transition-shadow hover:shadow-[0_4px_16px_var(--shadow)] hover:border-[var(--accent)]">
                   <h3 className="font-bold text-lg">{LINE_META[line].title}</h3>
-                  <p className="text-sm mt-1">{LINE_META[line].blurb}</p>
+                  <p className="text-sm mt-1">{LINE_META[line].cardBlurb}</p>
                   <span className="text-sm mt-3 inline-block">Ver detalles →</span>
                 </Card>
               </Link>

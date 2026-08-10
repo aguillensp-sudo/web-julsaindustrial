@@ -27,8 +27,33 @@ export function Footer() {
           <p className="font-bold text-white mb-2">Web</p>
           <ul className="-mx-1">
             <li>
+              <Link href="/" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+                Inicio
+              </Link>
+            </li>
+            <li>
               <Link href="/nosotros" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Nosotros
+              </Link>
+            </li>
+            <li>
+              <Link href="/combustibles" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+                Combustibles
+              </Link>
+            </li>
+            <li>
+              <Link href="/equipamiento-energetico" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+                Equipamiento energético
+              </Link>
+            </li>
+            <li>
+              <Link href="/autopartes" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+                Autopartes
+              </Link>
+            </li>
+            <li>
+              <Link href="/materias-primas" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+                Materias primas
               </Link>
             </li>
             <li>

@@ -19,14 +19,14 @@ const NAV = [
 export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-[var(--ink)] text-white">
-      <div className="max-w-[1200px] mx-auto px-6 h-14 flex items-center gap-6">
+      <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center gap-6">
         <Link href="/" className="flex items-center no-underline shrink-0">
           <Image
             src="/images/logo-julsa.png"
             alt="Julsa Industrial"
-            width={140}
-            height={40}
-            className="h-9 w-auto"
+            width={210}
+            height={60}
+            className="h-14 w-auto"
             priority
           />
         </Link>

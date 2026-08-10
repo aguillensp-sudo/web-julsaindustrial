@@ -37,3 +37,5 @@ yarn-error.log*
 # source extraction (agents-efficiency §6)
 _source/
 _work/
+
+.vercel

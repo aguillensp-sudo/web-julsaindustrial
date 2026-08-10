@@ -45,7 +45,9 @@ export default function NosotrosPage() {
       <main className="flex-1">
         <Section>
           <SectionLabel>Nosotros</SectionLabel>
-          <SectionTitle as="h1">Empresa española radicada en Cuba desde 2010</SectionTitle>
+          <SectionTitle as="h1" className="sr-only">
+            Nosotros
+          </SectionTitle>
           <p className="mt-2 max-w-2xl">
             Julsa Industrial es una empresa española que desde hace más de 20
             años se ha especializado en suministros de insumos y materias

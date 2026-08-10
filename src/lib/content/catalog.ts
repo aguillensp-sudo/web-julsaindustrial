@@ -155,29 +155,33 @@ export const CATALOG: CatalogItem[] = [
 
 export const LINE_META: Record<
   ProductLine,
-  { title: string; href: string; blurb: string }
+  { title: string; href: string; blurb: string; cardBlurb: string }
 > = {
   fuels: {
     title: "Combustibles",
     href: "/combustibles",
     blurb: "Gasolina, petróleo y balitas de gas para uso industrial y comercial.",
+    cardBlurb: "Gasolina, petróleo y balitas de gas para uso industrial y comercial.",
   },
   energy: {
     title: "Equipamientos energéticos",
     href: "/equipamiento-energetico",
     blurb:
       "Suministramos y comercializamos paneles solares, baterías e inversores para generación y almacenamiento de energía. Contamos con stock permanente en nuestras instalaciones para un servicio tanto a particulares como mayoristas.",
+    cardBlurb: "Paneles solares, baterías e inversores para generación y almacenamiento de energía",
   },
   autoparts: {
     title: "Autopartes",
     href: "/autopartes",
     blurb:
       "Somos distribuidores oficiales de la marca VT Batteries que cuenta con una gama de baterías para vehículos desde 45A hasta 220 A ofreciendo una calidad excepcional con un precio competitivo. Asimismo distribuimos la marca Double King con una gama amplia en neumáticos para carros, camiones y tractores. Completamos nuestra oferta automotriz con una variada gama de lubricantes y productos químicos de la marca Andel Automoción que garantizan un rendimiento óptimo y protección para el motor y el vehículo.",
+    cardBlurb: "Descubra nuestra oferta para vehículos automotrices de la mano de VT Batteries y Andel Automoción.",
   },
   raw_materials: {
     title: "Materias primas",
     href: "/materias-primas",
     blurb: "Insumos para acerías e industrias del papel.",
+    cardBlurb: "Insumos para acerías e industrias del papel.",
   },
 };
 
