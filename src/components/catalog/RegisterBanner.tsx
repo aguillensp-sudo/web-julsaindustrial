@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Card } from "@/components/ui/Card";
+import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Banner recurrente de registro. Texto del brief (Definiciones Previas §Contenidos).
@@ -15,12 +15,12 @@ export function RegisterBanner() {
           detalle de los productos. Anímese, entre y verifique{" "}
           <strong>nuestros precios</strong>, los mejores en Cuba.
         </p>
-        <Link
+        <ComingSoonLink
           href="/portal/registro"
           className="shrink-0 no-underline inline-flex items-center justify-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2"
         >
           Crear usuario →
-        </Link>
+        </ComingSoonLink>
       </div>
     </Card>
   );

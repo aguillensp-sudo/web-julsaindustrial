@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Hero reel de la Home (fase3-design §3.1).
@@ -50,19 +51,19 @@ export function HeroReel() {
             Julsa Industrial
           </span>
           <h1 className="text-4xl font-extrabold mt-2">
-            Suministro industrial y energético para Cuba
+            Suministros industriales automotrices y energéticos
           </h1>
           <p className="mt-4 text-white/80">
             Importación y distribución de combustibles, materias primas,
             equipamiento energético y autopartes. Empresa española radicada en
             Cuba desde 2010.
           </p>
-          <a
+          <ComingSoonLink
             href="/portal/login"
             className="mt-6 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2"
           >
             Acceso clientes →
-          </a>
+          </ComingSoonLink>
         </div>
 
         {/* Slides temáticos (placeholder hasta fotos de Alvaro) */}

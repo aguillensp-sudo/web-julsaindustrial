@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Pie en --ink. Contacto, mapa web, políticas y enlace al portal.
@@ -12,6 +13,14 @@ export function Footer() {
         <div>
           <p className="font-bold text-white mb-2">Julsa Industrial S.A.</p>
           <p>Tfno: +53 72636260</p>
+          <p>
+            <a
+              href="mailto:administracion@julsaindustrial.com"
+              className="text-white/80 hover:text-white"
+            >
+              administracion@julsaindustrial.com
+            </a>
+          </p>
           <p>La Habana, Cuba · Madrid, España</p>
         </div>
         <nav aria-label="Mapa web">
@@ -28,9 +37,9 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/portal/login" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+              <ComingSoonLink href="/portal/login" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Acceso clientes
-              </Link>
+              </ComingSoonLink>
             </li>
           </ul>
         </nav>

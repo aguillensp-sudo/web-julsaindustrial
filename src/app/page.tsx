@@ -1,9 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
-import { DistributionMap } from "@/components/cuba/DistributionMap";
+import { ComingSoonLink } from "@/components/ComingSoonLink";
 import { HeroReel } from "./HeroReel";
 import { LINE_META } from "@/lib/content/catalog";
 import type { ProductLine } from "@/lib/db/types";
@@ -22,7 +23,7 @@ export default function Home() {
           <SectionLabel>Sobre nosotros</SectionLabel>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <SectionTitle className="max-w-xl">
-              Empresa española radicada en Cuba desde 2010
+              Empresa española de distribución y comercialización mayorista desde 2010
             </SectionTitle>
             <Link href="/nosotros" className="no-underline shrink-0">
               Conózcanos →
@@ -30,8 +31,8 @@ export default function Home() {
           </div>
           <p className="mt-3 max-w-2xl">
             Julsa Industrial se dedica a la importación y distribución de
-            combustibles, materias primas para la industria y equipamiento
-            energético para el sector industrial y comercial.
+            combustibles, materias primas para la industria, autopartes y
+            equipamiento energético para el sector industrial y comercial.
           </p>
         </Section>
 
@@ -41,16 +42,17 @@ export default function Home() {
           <SectionTitle className="mb-4">Lo que suministramos</SectionTitle>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {LINES.map((line) => (
-              <Card key={line}>
-                <h3 className="font-bold text-lg">{LINE_META[line].title}</h3>
-                <p className="text-sm mt-1">{LINE_META[line].blurb}</p>
-                <Link
-                  href={LINE_META[line].href}
-                  className="text-sm mt-3 inline-block no-underline"
-                >
-                  Ver catálogo →
-                </Link>
-              </Card>
+              <Link
+                key={line}
+                href={LINE_META[line].href}
+                className="no-underline"
+              >
+                <Card className="h-full transition-shadow hover:shadow-[0_4px_16px_var(--shadow)] hover:border-[var(--accent)]">
+                  <h3 className="font-bold text-lg">{LINE_META[line].title}</h3>
+                  <p className="text-sm mt-1">{LINE_META[line].blurb}</p>
+                  <span className="text-sm mt-3 inline-block">Ver detalles →</span>
+                </Card>
+              </Link>
             ))}
           </div>
         </Section>
@@ -64,14 +66,20 @@ export default function Home() {
               <p className="text-sm">
                 Sedes en <strong>La Habana</strong> (Cuba) y <strong>Madrid</strong>{" "}
                 (España), con red de socios y distribuidores en Cienfuegos,
-                Camagüey, Holguín y Bayamo.
+                Camagüey y Bayamo.
               </p>
               <Link href="/contacto" className="text-sm mt-3 inline-block no-underline">
                 Ver contacto →
               </Link>
             </div>
             <Card>
-              <DistributionMap compact />
+              <Image
+                src="/images/mapa.png"
+                alt="Mapa de la red de distribución de Julsa Industrial en Cuba"
+                width={600}
+                height={340}
+                className="w-full h-auto rounded"
+              />
             </Card>
           </div>
         </Section>
@@ -81,15 +89,15 @@ export default function Home() {
           <Card className="border-[var(--accent)]">
             <SectionLabel>Portal de clientes</SectionLabel>
             <p className="mt-2">
-              Cree su usuario y acceda a su área personal para ver el detalle de
-              productos y nuestros precios en USD.
+              Cree su usuario y acceda a su área personal para poder adquirir
+              nuestros productos.
             </p>
-            <Link
+            <ComingSoonLink
               href="/portal/registro"
               className="mt-3 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-4 py-2"
             >
               Crear usuario →
-            </Link>
+            </ComingSoonLink>
           </Card>
         </Section>
       </main>

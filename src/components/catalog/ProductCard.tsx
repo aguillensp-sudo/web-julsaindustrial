@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import type { CatalogItem } from "@/lib/content/catalog";
 
@@ -7,9 +8,17 @@ import type { CatalogItem } from "@/lib/content/catalog";
  */
 export function ProductCard({ item }: { item: CatalogItem }) {
   return (
-    <Card className="flex flex-col">
-      <div className="mb-3 aspect-[4/3] w-full rounded bg-[var(--bg)] flex items-center justify-center border border-[var(--border)]">
-        {item.visual === "icon" ? (
+    <Card className="flex flex-col transition-shadow hover:shadow-[0_4px_16px_var(--shadow)] hover:border-[var(--accent)]">
+      <div className="mb-3 aspect-[4/3] w-full rounded bg-[var(--bg)] flex items-center justify-center border border-[var(--border)] overflow-hidden relative">
+        {item.visual === "image" && item.imageSrc ? (
+          <Image
+            src={item.imageSrc}
+            alt={item.name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+        ) : item.visual === "icon" ? (
           <ProductIcon name={item.iconName ?? "box"} />
         ) : (
           <PhotoPlaceholder label={item.name} />
@@ -28,6 +37,21 @@ export function ProductCard({ item }: { item: CatalogItem }) {
             </li>
           ))}
         </ul>
+      )}
+      {item.links && item.links.length > 0 && (
+        <div className="mt-3 flex flex-col gap-1">
+          {item.links.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold text-[var(--link)]"
+            >
+              {link.label} →
+            </a>
+          ))}
+        </div>
       )}
     </Card>
   );

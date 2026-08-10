@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
-import { DistributionMap } from "@/components/cuba/DistributionMap";
 
 export const metadata: Metadata = {
   title: "Nosotros",
@@ -47,9 +47,15 @@ export default function NosotrosPage() {
           <SectionLabel>Nosotros</SectionLabel>
           <SectionTitle as="h1">Empresa española radicada en Cuba desde 2010</SectionTitle>
           <p className="mt-2 max-w-2xl">
-            Julsa Industrial se dedica a la importación y distribución de
-            combustibles, materias primas para la industria y equipamiento
-            energético para el sector industrial y comercial.
+            Julsa Industrial es una empresa española que desde hace más de 20
+            años se ha especializado en suministros de insumos y materias
+            primas para el sector estatal y privado de Cuba. Contamos con un
+            equipo humano experimentado en las áreas de ingeniería y
+            logística, así como en la gestión de proyectos y relaciones
+            comerciales. Nuestro objetivo principal es ofrecer a nuestros
+            clientes una solución integral y personalizada para sus
+            necesidades de suministro de insumos y materias primas, así como
+            un servicio de calidad y atención al cliente excepcional.
           </p>
         </Section>
 
@@ -100,11 +106,17 @@ export default function NosotrosPage() {
                 También contamos con una red de socios y distribuidores en todo el
                 país, que nos permiten llegar a un amplio número de clientes y
                 ofrecerles un servicio personalizado y de calidad en Cienfuegos,
-                Camagüey, Holguín y Bayamo.
+                Camagüey y Bayamo.
               </p>
             </div>
             <Card>
-              <DistributionMap />
+              <Image
+                src="/images/mapa.png"
+                alt="Mapa de la red de distribución de Julsa Industrial en Cuba"
+                width={600}
+                height={340}
+                className="w-full h-auto rounded"
+              />
             </Card>
           </div>
         </Section>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
@@ -40,8 +41,22 @@ export default function ContactoPage() {
             </Card>
             <div className="space-y-4">
               <Card>
-                <p className="font-bold">Julsa Industrial S.A.</p>
-                <p className="text-sm mt-1">Teléfono: +53 72636260</p>
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/images/logo-julsa.png"
+                    alt="Julsa Industrial"
+                    width={64}
+                    height={64}
+                    className="h-12 w-auto"
+                  />
+                  <p className="font-bold">Julsa Industrial S.A.</p>
+                </div>
+                <p className="text-sm mt-2">Teléfono: +53 72636260</p>
+                <p className="text-sm mt-1">
+                  <a href="mailto:administracion@julsaindustrial.com">
+                    administracion@julsaindustrial.com
+                  </a>
+                </p>
               </Card>
               {SEDES.map((sede) => (
                 <Card key={sede.city}>
