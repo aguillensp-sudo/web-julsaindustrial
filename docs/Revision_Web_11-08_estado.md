@@ -42,6 +42,29 @@ una línea, así que dos artículos exigían dos pedidos. Ahora:
 Se eliminan `OrderForm`/`orderActions` (flujo de un pedido por artículo) y sus
 tests; se añaden tests de `cartActions`.
 
+## Fusión con el checkout de pasarelas de pago
+
+En el directorio principal había trabajo sin commitear con checkout de Stripe y
+carrito en `localStorage`. Se ha fusionado: **se conserva ese checkout y se
+sustituye su carrito de navegador por `cart_items` en base de datos**.
+
+- `/portal/carrito` → "Finalizar pedido" lleva a `/portal/checkout`, que muestra
+  el resumen (leído en servidor desde `cart_items`) y el método de pago:
+  transferencia, tarjeta (Stripe) o TropiPay (deshabilitado, "próximamente").
+- `createOrderFromCart` relee el carrito, el precio y el stock desde Supabase:
+  nada de lo que envía el navegador influye en el importe cobrado.
+- Tarjeta → sesión de Stripe Checkout; el webhook `/api/webhooks/stripe` marca
+  `payment_status='paid'`. Transferencia → a "Mis pedidos" a subir comprobante.
+- "Mis pedidos" muestra método y estado de pago, y permite reintentar el pago
+  con tarjeta de un pedido pendiente. El admin ve ambos datos en listado y
+  detalle, y al aprobar una transferencia salda también el pago.
+- Migraciones `0007_stripe_setup.sql` (tablas de Stripe) y
+  `0008_order_payment_fields.sql` (tipo `payment_status` y columnas de pago),
+  **idempotentes**: la 0008 arregla el `create type payment_status` sin guarda
+  que provocó el error "type payment_status already exists".
+- Descartados del trabajo previo: `CartContext` (localStorage), `CartLink`,
+  `CartView` y su `/portal/carrito`, sustituidos por la versión en BD.
+
 ## Pendiente de configuración en Supabase (no es código)
 
 1. **Remitente de los emails** (punto 1): hoy salen desde el SMTP por defecto de
@@ -50,12 +73,17 @@ tests; se añaden tests de `cartActions`.
 2. **Redirect URLs**: añadir `https://<dominio>/auth/callback` (y el de
    preview/local) en *Authentication → URL Configuration → Redirect URLs*, o los
    enlaces de confirmación y recuperación se rechazarán.
-3. **Aplicar las migraciones** `0005_new_user_phone_location.sql` y
-   `0006_cart_items.sql` (sin esta última el carrito no funciona).
+3. **Aplicar las migraciones en orden**: `0005_new_user_phone_location.sql`,
+   `0006_cart_items.sql`, `0007_stripe_setup.sql` y
+   `0008_order_payment_fields.sql`. Todas son relanzables sin romper nada.
+   Ojo: la `0005` que se aplicó el 11-08 fue la de Stripe del directorio
+   principal, **no** la de `phone`/`location`; esa sigue pendiente.
+4. **Stripe**: definir `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` y
+   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, y dar de alta el endpoint
+   `https://<dominio>/api/webhooks/stripe` en el panel de Stripe.
 
 ## No aplicable en la web actual
 
-- **Iconos de tarjetas en "Finalizar pedido"** (punto 5): ya existe la pantalla
-  de finalizar pedido (el carrito), pero no hay selección de método de pago: el
-  cobro es por transferencia con comprobante. Cuando se active la pasarela se
-  añaden ahí los iconos de las tarjetas aceptadas.
+Nada: con la fusión del checkout, el punto 5 (iconos de las tarjetas aceptadas
+en "Finalizar pedido") también queda hecho — Visa, Mastercard y American Express
+en SVG junto a la opción de pago con tarjeta.

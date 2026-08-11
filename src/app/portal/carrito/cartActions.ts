@@ -26,10 +26,6 @@ const quantitySchema = z.object({
 
 export type CartActionResult = { ok: true } | { ok: false; error: string };
 
-export type CheckoutResult =
-  | { ok: true; orderId: string }
-  | { ok: false; error: string };
-
 async function requireUser() {
   const supabase = await createClient();
   const {
@@ -140,79 +136,4 @@ export async function removeFromCart(
 
   revalidatePath("/portal/carrito");
   return { ok: true };
-}
-
-/**
- * Convierte el carrito en un pedido: un solo `orders` con tantas líneas como
- * productos tenga el carrito. El precio unitario y el total los fija la base
- * de datos (triggers de 0004), no el cliente.
- */
-export async function checkout(formData: FormData): Promise<CheckoutResult> {
-  const notesParsed = z.string().max(2000).optional().safeParse(
-    (formData.get("notes") as string | null) ?? undefined,
-  );
-  if (!notesParsed.success)
-    return { ok: false, error: "Las observaciones son demasiado largas." };
-
-  const { supabase, user } = await requireUser();
-  if (!user) return { ok: false, error: "Debe iniciar sesión." };
-
-  const { data: items } = await supabase
-    .from("cart_items")
-    .select("product_id, quantity, products(name, price_usd, stock, is_active)")
-    .eq("customer_id", user.id);
-
-  if (!items || items.length === 0)
-    return { ok: false, error: "Su carrito está vacío." };
-
-  // Validar disponibilidad de todas las líneas antes de crear nada.
-  for (const item of items) {
-    const product = Array.isArray(item.products) ? item.products[0] : item.products;
-    if (!product || !product.is_active)
-      return {
-        ok: false,
-        error: "Un producto del carrito ya no está disponible. Revíselo.",
-      };
-    if (product.stock < item.quantity)
-      return {
-        ok: false,
-        error: `No hay stock suficiente de ${product.name}.`,
-      };
-  }
-
-  const { data: order, error: orderError } = await supabase
-    .from("orders")
-    .insert({
-      customer_id: user.id,
-      status: "in_payment",
-      notes: notesParsed.data ?? null,
-    })
-    .select("id")
-    .single();
-  if (orderError || !order)
-    return { ok: false, error: "No se pudo crear el pedido." };
-
-  const { error: itemsError } = await supabase.from("order_items").insert(
-    items.map((item) => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      // La DB sobrescribe el precio con el vigente (trigger de 0004).
-      unit_price_usd: 0,
-    })),
-  );
-  if (itemsError) {
-    // Sin líneas el pedido no tiene sentido: se deshace para no dejar
-    // pedidos vacíos en "Mis pedidos".
-    await supabase.from("orders").delete().eq("id", order.id);
-    return { ok: false, error: "No se pudieron añadir los productos al pedido." };
-  }
-
-  // Pedido realizado: el carrito se vacía.
-  await supabase.from("cart_items").delete().eq("customer_id", user.id);
-
-  revalidatePath("/portal/carrito");
-  revalidatePath("/portal/mis-pedidos");
-  revalidatePath("/portal");
-  return { ok: true, orderId: order.id };
 }

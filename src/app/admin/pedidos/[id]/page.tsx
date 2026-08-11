@@ -1,6 +1,12 @@
 import { Card } from "@/components/ui/Card";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ORDER_STATUS_LABEL } from "@/lib/db/types";
+import {
+  ORDER_STATUS_LABEL,
+  PAYMENT_METHOD_LABEL,
+  PAYMENT_STATUS_LABEL,
+  type PaymentMethod,
+  type PaymentStatus,
+} from "@/lib/db/types";
 import Link from "next/link";
 import { ProofViewer } from "./ProofViewer";
 import { MarkReadyButton } from "./MarkReadyButton";
@@ -18,6 +24,8 @@ type OrderDetail = {
   id: string;
   customer_id: string;
   status: keyof typeof ORDER_STATUS_LABEL;
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
   total_usd: number;
   notes: string | null;
   created_at: string;
@@ -112,6 +120,19 @@ export default async function AdminPedidoDetailPage({
           >
             {ORDER_STATUS_LABEL[typedOrder.status]}
           </span>
+          <p className="text-sm mt-2">
+            Pago: {PAYMENT_METHOD_LABEL[typedOrder.payment_method] ?? "Transferencia"}
+            {" — "}
+            <span
+              className={
+                typedOrder.payment_status === "paid"
+                  ? "text-green-700 font-medium"
+                  : "text-amber-700 font-medium"
+              }
+            >
+              {PAYMENT_STATUS_LABEL[typedOrder.payment_status] ?? "Pago pendiente"}
+            </span>
+          </p>
           {typedOrder.notes && <p className="text-sm mt-3">Notas: {typedOrder.notes}</p>}
         </Card>
       </div>

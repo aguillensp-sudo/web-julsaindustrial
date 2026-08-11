@@ -12,10 +12,9 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
-import { addToCart, checkout, removeFromCart, setCartQuantity } from "./cartActions";
+import { addToCart, removeFromCart, setCartQuantity } from "./cartActions";
 
 const PRODUCT_ID = "123e4567-e89b-12d3-a456-426614174000";
-const OTHER_PRODUCT_ID = "223e4567-e89b-12d3-a456-426614174000";
 const USER = { id: "user-1" };
 
 /** Cadena `select().eq()...maybeSingle()` con resultado fijo. */
@@ -168,145 +167,5 @@ describe("removeFromCart", () => {
 
     expect(result).toEqual({ ok: true });
     expect(eqProduct).toHaveBeenCalledWith("product_id", PRODUCT_ID);
-  });
-});
-
-describe("checkout", () => {
-  function cartSelect(items: unknown[]) {
-    return {
-      select: vi.fn(() => ({
-        eq: vi.fn().mockResolvedValue({ data: items, error: null }),
-      })),
-    };
-  }
-
-  it("fails when the cart is empty", async () => {
-    const client = createMockClient();
-    client.from.mockImplementation((table: string) =>
-      table === "cart_items" ? cartSelect([]) : {},
-    );
-    mockCreateClient.mockResolvedValue(client);
-
-    const result = await checkout(new FormData());
-    expect(result).toEqual({ ok: false, error: "Su carrito está vacío." });
-  });
-
-  it("fails when a line has no stock left", async () => {
-    const client = createMockClient();
-    client.from.mockImplementation((table: string) =>
-      table === "cart_items"
-        ? cartSelect([
-            {
-              product_id: PRODUCT_ID,
-              quantity: 5,
-              products: { name: "Gasoil", price_usd: 10, stock: 2, is_active: true },
-            },
-          ])
-        : {},
-    );
-    mockCreateClient.mockResolvedValue(client);
-
-    const result = await checkout(new FormData());
-    expect(result).toEqual({
-      ok: false,
-      error: "No hay stock suficiente de Gasoil.",
-    });
-  });
-
-  it("creates ONE order with every cart line and empties the cart", async () => {
-    const insertItems = vi.fn().mockResolvedValue({ error: null });
-    const deleteEq = vi.fn().mockResolvedValue({ error: null });
-    const cartDelete = vi.fn(() => ({ eq: deleteEq }));
-    const orderInsert = vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn().mockResolvedValue({ data: { id: "order-1" }, error: null }),
-      })),
-    }));
-
-    const client = createMockClient();
-    client.from.mockImplementation((table: string) => {
-      if (table === "cart_items")
-        return {
-          ...cartSelect([
-            {
-              product_id: PRODUCT_ID,
-              quantity: 2,
-              products: { name: "Gasoil", price_usd: 10, stock: 50, is_active: true },
-            },
-            {
-              product_id: OTHER_PRODUCT_ID,
-              quantity: 1,
-              products: { name: "Batería", price_usd: 90, stock: 5, is_active: true },
-            },
-          ]),
-          delete: cartDelete,
-        };
-      if (table === "orders") return { insert: orderInsert };
-      if (table === "order_items") return { insert: insertItems };
-      return {};
-    });
-    mockCreateClient.mockResolvedValue(client);
-
-    const result = await checkout(formDataOf({ notes: "Entregar por la mañana" }));
-
-    expect(result).toEqual({ ok: true, orderId: "order-1" });
-    expect(orderInsert).toHaveBeenCalledTimes(1);
-    expect(orderInsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        customer_id: USER.id,
-        status: "in_payment",
-        notes: "Entregar por la mañana",
-      }),
-    );
-    // Las dos líneas del carrito van al MISMO pedido.
-    expect(insertItems).toHaveBeenCalledWith([
-      expect.objectContaining({ order_id: "order-1", product_id: PRODUCT_ID, quantity: 2 }),
-      expect.objectContaining({
-        order_id: "order-1",
-        product_id: OTHER_PRODUCT_ID,
-        quantity: 1,
-      }),
-    ]);
-    expect(cartDelete).toHaveBeenCalled();
-    expect(deleteEq).toHaveBeenCalledWith("customer_id", USER.id);
-  });
-
-  it("rolls back the order when the lines cannot be inserted", async () => {
-    const orderDeleteEq = vi.fn().mockResolvedValue({ error: null });
-    const orderDelete = vi.fn(() => ({ eq: orderDeleteEq }));
-    const client = createMockClient();
-    client.from.mockImplementation((table: string) => {
-      if (table === "cart_items")
-        return cartSelect([
-          {
-            product_id: PRODUCT_ID,
-            quantity: 2,
-            products: { name: "Gasoil", price_usd: 10, stock: 50, is_active: true },
-          },
-        ]);
-      if (table === "orders")
-        return {
-          insert: vi.fn(() => ({
-            select: vi.fn(() => ({
-              single: vi
-                .fn()
-                .mockResolvedValue({ data: { id: "order-1" }, error: null }),
-            })),
-          })),
-          delete: orderDelete,
-        };
-      if (table === "order_items")
-        return { insert: vi.fn().mockResolvedValue({ error: { message: "boom" } }) };
-      return {};
-    });
-    mockCreateClient.mockResolvedValue(client);
-
-    const result = await checkout(new FormData());
-
-    expect(result).toEqual({
-      ok: false,
-      error: "No se pudieron añadir los productos al pedido.",
-    });
-    expect(orderDeleteEq).toHaveBeenCalledWith("id", "order-1");
   });
 });

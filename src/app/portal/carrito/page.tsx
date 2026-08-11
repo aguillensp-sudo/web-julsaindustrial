@@ -5,7 +5,6 @@ import { PortalShell } from "../PortalShell";
 import { getCurrentCustomer } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { CartLine } from "./CartLine";
-import { CheckoutForm } from "./CheckoutForm";
 
 export const metadata: Metadata = {
   title: "Carrito",
@@ -97,19 +96,23 @@ export default async function CarritoPage() {
             </table>
           </div>
 
-          <div className="mt-6 max-w-md">
-            <CheckoutForm disabled={blocked} />
-            {blocked && (
-              <p className="text-sm text-red-700 mt-2" role="alert">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <Link href="/portal/catalogo" className="text-[15px] no-underline">
+              ← Seguir comprando
+            </Link>
+            {blocked ? (
+              <p className="text-sm text-red-700" role="alert">
                 Hay líneas sin disponibilidad. Ajuste la cantidad o quite el
                 producto para poder finalizar el pedido.
               </p>
-            )}
-            <p className="text-[15px] mt-4">
-              <Link href="/portal/catalogo" className="no-underline">
-                ← Seguir comprando
+            ) : (
+              <Link
+                href="/portal/checkout"
+                className="rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2 no-underline"
+              >
+                Finalizar pedido →
               </Link>
-            </p>
+            )}
           </div>
         </>
       )}
