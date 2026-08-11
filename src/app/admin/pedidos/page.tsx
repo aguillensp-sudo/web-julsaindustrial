@@ -21,6 +21,13 @@ export default async function AdminPedidosPage() {
     .select("id, status, total_usd, created_at, customers(company_name, contact_name)")
     .order("created_at", { ascending: false });
 
+  // Comprobantes subidos por los clientes, para señalar en el listado qué
+  // pedidos ya traen adjunto sin tener que entrar al detalle.
+  const { data: proofs } = await supabase
+    .from("payment_proofs")
+    .select("order_id");
+  const withProof = new Set((proofs ?? []).map((p) => p.order_id));
+
   if (error) {
     return (
       <div className="p-6">
@@ -70,6 +77,15 @@ export default async function AdminPedidosPage() {
                     }`}
                   >
                     {ORDER_STATUS_LABEL[order.status]}
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${
+                      withProof.has(order.id) ? "text-green-700" : "text-gray-500"
+                    }`}
+                  >
+                    {withProof.has(order.id)
+                      ? "Comprobante adjunto ✓"
+                      : "Sin comprobante"}
                   </span>
                   <Link
                     href={`/admin/pedidos/${order.id}`}

@@ -32,8 +32,8 @@ export default async function PortalHome() {
           href="/portal/catalogo"
           className="no-underline bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_4px_var(--shadow)] rounded p-5 hover:border-[var(--accent)]"
         >
-          <h2 className="font-bold text-lg text-[var(--text)]">Catálogo y precios</h2>
-          <p className="text-sm mt-1">Vea productos y precios en USD, y haga pedidos.</p>
+          <h2 className="font-bold text-lg text-[var(--text)]">Tienda</h2>
+          <p className="text-sm mt-1">Ver productos y realizar pedidos.</p>
         </Link>
         <Link
           href="/portal/mis-pedidos"

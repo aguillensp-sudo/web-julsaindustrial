@@ -17,7 +17,7 @@ export default async function CompleteProfilePage() {
   }
 
   return (
-    <PortalShell>
+    <PortalShell showNav={false}>
       <div className="max-w-2xl mx-auto py-12">
         <h1 className="text-2xl font-bold mb-2">Complete su perfil</h1>
         <p className="text-sm text-[var(--text)]/70 mb-6">

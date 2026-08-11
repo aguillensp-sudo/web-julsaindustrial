@@ -39,7 +39,7 @@ describe("RecoverForm", () => {
 
     expect(mockResetPasswordForEmail).toHaveBeenCalledWith(
       "user@example.com",
-      { redirectTo: expect.stringContaining("/portal/login") }
+      { redirectTo: expect.stringContaining("/auth/callback?next=/portal/restablecer") }
     );
     expect(
       screen.getByRole("status")

@@ -5,6 +5,7 @@ import { getCurrentCustomer } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { ORDER_STATUS_LABEL } from "@/lib/db/types";
 import { ProofUpload } from "./ProofUpload";
+import { ProofView } from "./ProofView";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,26 @@ export default async function MisPedidosPage() {
     .select("id, status, total_usd, created_at")
     .eq("customer_id", customer.id)
     .order("created_at", { ascending: false });
+
+  // Comprobante ya adjuntado por pedido (uno como máximo). Se muestra siempre
+  // para que el cliente pueda verlo y, si se equivocó, sustituirlo.
+  const orderIds = (orders ?? []).map((o) => o.id);
+  const { data: proofs } = orderIds.length
+    ? await supabase
+        .from("payment_proofs")
+        .select("order_id, file_path, uploaded_at")
+        .in("order_id", orderIds)
+        .order("uploaded_at", { ascending: false })
+    : { data: [] as { order_id: string; file_path: string; uploaded_at: string }[] };
+
+  const proofByOrder = new Map<string, { file_path: string; uploaded_at: string }>();
+  for (const p of proofs ?? []) {
+    if (!proofByOrder.has(p.order_id))
+      proofByOrder.set(p.order_id, {
+        file_path: p.file_path,
+        uploaded_at: p.uploaded_at,
+      });
+  }
 
   return (
     <PortalShell>
@@ -54,11 +75,19 @@ export default async function MisPedidosPage() {
                   </td>
                   <td className="p-3">
                     {o.status === "ready_for_delivery" ? (
-                      <span className="text-xs text-green-700">
-                        Pago verificado ✓
-                      </span>
+                      <div className="space-y-1">
+                        <span className="block text-xs text-green-700">
+                          Pago verificado ✓
+                        </span>
+                        {proofByOrder.get(o.id) && (
+                          <ProofView proof={proofByOrder.get(o.id)!} />
+                        )}
+                      </div>
                     ) : (
-                      <ProofUpload orderId={o.id} />
+                      <ProofUpload
+                        orderId={o.id}
+                        existing={proofByOrder.get(o.id) ?? null}
+                      />
                     )}
                   </td>
                 </tr>
