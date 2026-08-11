@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PortalShell } from "../../PortalShell";
 import { getCurrentCustomer } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { OrderForm } from "./OrderForm";
+import { AddToCartForm } from "./AddToCartForm";
 
 export const dynamic = "force-dynamic";
 
@@ -62,8 +62,8 @@ export default async function ProductDetailPage({
             </span>
           </div>
           <hr className="my-5 border-[var(--border)]" />
-          <h2 className="font-bold mb-2">Hacer pedido</h2>
-          <OrderForm productId={product.id} />
+          <h2 className="font-bold mb-2">Añadir al carrito</h2>
+          <AddToCartForm productId={product.id} disabled={product.stock <= 0} />
         </div>
       </div>
     </PortalShell>
