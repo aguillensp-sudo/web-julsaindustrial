@@ -65,6 +65,21 @@ sustituye su carrito de navegador por `cart_items` en base de datos**.
 - Descartados del trabajo previo: `CartContext` (localStorage), `CartLink`,
   `CartView` y su `/portal/carrito`, sustituidos por la versión en BD.
 
+## Estado en producción (12-08-2026)
+
+- **Migraciones aplicadas** en el proyecto `ozfgxryrrngstugkfyes` (el mismo que
+  usa julsaindustrial.com): historial remoto 0001→0008 completo.
+- **Alta de cliente verificada** contra esa base de datos por las dos vías: API
+  de administración y `POST /auth/v1/signup` con la clave anon (la que usa el
+  formulario web). En ambos casos el trigger crea la fila en `customers` con
+  `company_name`, `contact_name`, `phone`, `location` y `status='active'`. Los
+  usuarios de prueba se borraron después.
+- **Código integrado en `main`** y desplegado en el entorno de producción de
+  Vercel (`web-julsaindustrial.vercel.app`).
+- **Pendiente**: julsaindustrial.com no está en Vercel; lo sirve un VPS propio
+  con nginx (217.154.179.85). Hay que actualizar ahí el código (git pull +
+  build + reinicio del proceso) o apuntar el DNS a Vercel.
+
 ## Pendiente de configuración en Supabase (no es código)
 
 1. **Remitente de los emails** (punto 1): hoy salen desde el SMTP por defecto de
@@ -73,11 +88,8 @@ sustituye su carrito de navegador por `cart_items` en base de datos**.
 2. **Redirect URLs**: añadir `https://<dominio>/auth/callback` (y el de
    preview/local) en *Authentication → URL Configuration → Redirect URLs*, o los
    enlaces de confirmación y recuperación se rechazarán.
-3. **Aplicar las migraciones en orden**: `0005_new_user_phone_location.sql`,
-   `0006_cart_items.sql`, `0007_stripe_setup.sql` y
-   `0008_order_payment_fields.sql`. Todas son relanzables sin romper nada.
-   Ojo: la `0005` que se aplicó el 11-08 fue la de Stripe del directorio
-   principal, **no** la de `phone`/`location`; esa sigue pendiente.
+3. ~~Aplicar las migraciones~~ **Hecho el 12-08-2026**: 0005→0008 aplicadas con
+   `supabase db push`; el historial remoto va de 0001 a 0008.
 4. **Stripe**: definir `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` y
    `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, y dar de alta el endpoint
    `https://<dominio>/api/webhooks/stripe` en el panel de Stripe.
