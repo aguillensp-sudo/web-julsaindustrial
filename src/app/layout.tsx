@@ -18,6 +18,21 @@ export const metadata: Metadata = {
   },
   description:
     "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes. Empresa española radicada en Panamá y República Dominicana desde 2010.",
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: "Julsa Industrial",
+    title: "Julsa Industrial — Suministro industrial y energético",
+    description:
+      "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes. Empresa española radicada en Panamá y República Dominicana desde 2010.",
+    url: "https://julsaindustrial.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Julsa Industrial — Suministro industrial y energético",
+    description:
+      "Importación y distribución de combustibles, materias primas, equipamiento energético y autopartes.",
+  },
 };
 
 export default function RootLayout({

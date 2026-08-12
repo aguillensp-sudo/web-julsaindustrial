@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
@@ -8,6 +9,10 @@ import { LINE_META } from "@/lib/content/catalog";
 import type { ProductLine } from "@/lib/db/types";
 
 const LINES: ProductLine[] = ["fuels", "energy", "autoparts", "raw_materials"];
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (

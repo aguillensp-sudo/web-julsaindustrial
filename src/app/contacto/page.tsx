@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Contacto",
   description:
     "Contacte con Julsa Industrial. Sede en Madrid (España). Tfno: +34 673 764987.",
+  alternates: { canonical: "/contacto" },
 };
 
 const SEDES = [

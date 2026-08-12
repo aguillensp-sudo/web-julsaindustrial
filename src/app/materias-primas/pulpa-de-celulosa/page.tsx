@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Pulpa de celulosa y derivados",
   description:
     "Pulpa de celulosa, non woven, siliconas, pegamentos, súper absorbente y película para la industria del papel y productos de higiene.",
+  alternates: { canonical: "/materias-primas/pulpa-de-celulosa" },
 };
 
 interface PulpaDerivado {
@@ -67,9 +68,32 @@ const DERIVADOS: PulpaDerivado[] = [
 ];
 
 export default function PulpaDeCelulosaPage() {
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://julsaindustrial.com/" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Materias primas",
+        item: "https://julsaindustrial.com/materias-primas",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Pulpa de celulosa y derivados",
+        item: "https://julsaindustrial.com/materias-primas/pulpa-de-celulosa",
+      },
+    ],
+  };
   return (
     <>
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
       <main className="flex-1">
         <Section>
           <SectionLabel>Materias primas</SectionLabel>

@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Materias primas",
   description:
     "Insumos para acerías (sílico manganeso, ferrosilicio, electrodos de grafito) e industrias del papel.",
+  alternates: { canonical: "/materias-primas" },
 };
 
 export default function Page() {

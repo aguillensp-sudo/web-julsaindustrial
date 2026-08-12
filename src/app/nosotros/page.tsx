@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Nosotros",
   description:
     "Julsa Industrial: empresa española radicada en Panamá y República Dominicana desde 2010. Historia, misión, visión y equipo.",
+  alternates: { canonical: "/nosotros" },
 };
 
 const TIMELINE = [

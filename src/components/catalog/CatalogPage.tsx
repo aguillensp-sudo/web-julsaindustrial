@@ -13,9 +13,26 @@ import type { ProductLine } from "@/lib/db/types";
 export function CatalogPage({ line }: { line: ProductLine }) {
   const meta = LINE_META[line];
   const items = itemsByLine(line);
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://julsaindustrial.com/" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: meta.title,
+        item: `https://julsaindustrial.com${meta.href}`,
+      },
+    ],
+  };
   return (
     <>
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+      />
       <main className="flex-1">
         <Section>
           <SectionLabel>Catálogo</SectionLabel>
