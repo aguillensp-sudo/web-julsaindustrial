@@ -1,58 +1,65 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { OrderForm } from "./OrderForm";
+import { CartProvider, useCart } from "@/lib/cart/CartContext";
 
-const { mockCreateOrder } = vi.hoisted(() => ({
-  mockCreateOrder: vi.fn(),
-}));
+function CartPeek() {
+  const { items } = useCart();
+  return <div data-testid="cart-peek">{JSON.stringify(items)}</div>;
+}
 
-vi.mock("./orderActions", () => ({
-  createOrder: mockCreateOrder,
-}));
+function renderWithCart(ui: React.ReactNode) {
+  return render(
+    <CartProvider>
+      {ui}
+      <CartPeek />
+    </CartProvider>,
+  );
+}
 
 describe("OrderForm", () => {
   beforeEach(() => {
-    mockCreateOrder.mockReset();
+    window.localStorage.clear();
   });
 
-  it("shows status and link on successful order creation", async () => {
-    mockCreateOrder.mockResolvedValue({ ok: true, orderId: "order-1" });
+  it("adds the product to the cart and shows confirmation links", async () => {
+    renderWithCart(
+      <OrderForm productId="prod-1" name="Producto 1" unitPrice={10} stock={5} />,
+    );
 
-    render(<OrderForm productId="prod-1" />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Crear pedido" }));
+    fireEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
 
     const status = await screen.findByRole("status");
-    expect(status).toHaveTextContent("Pedido creado.");
+    expect(status).toHaveTextContent("Añadido al carrito.");
 
-    const link = screen.getByRole("link", { name: "Mis pedidos" });
-    expect(link).toHaveAttribute("href", "/portal/mis-pedidos");
+    expect(screen.getByRole("link", { name: "Ver carrito" })).toHaveAttribute(
+      "href",
+      "/portal/carrito",
+    );
+
+    expect(screen.getByTestId("cart-peek")).toHaveTextContent("prod-1");
   });
 
-  it("shows alert error and keeps form on error", async () => {
-    mockCreateOrder.mockResolvedValue({
-      ok: false,
-      error: "Error al crear pedido",
-    });
+  it("respects the chosen quantity when adding to cart", async () => {
+    renderWithCart(
+      <OrderForm productId="prod-1" name="Producto 1" unitPrice={10} stock={5} />,
+    );
 
-    render(<OrderForm productId="prod-1" />);
+    const qtyInput = screen.getByLabelText("Cantidad");
+    fireEvent.change(qtyInput, { target: { value: "3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Crear pedido" }));
+    expect(screen.getByTestId("cart-peek")).toHaveTextContent('"quantity":3');
+  });
 
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Error al crear pedido");
+  it("shows out-of-stock message and no form when stock is 0", () => {
+    renderWithCart(
+      <OrderForm productId="prod-1" name="Producto 1" unitPrice={10} stock={0} />,
+    );
 
+    expect(screen.getByText("Producto sin stock disponible.")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Crear pedido" })
-    ).toBeInTheDocument();
-  });
-
-  it("renders hidden product_id input with correct value", () => {
-    render(<OrderForm productId="prod-1" />);
-    const hiddenInput = document.querySelector(
-      'input[name="product_id"]'
-    ) as HTMLInputElement;
-    expect(hiddenInput).toBeInTheDocument();
-    expect(hiddenInput.value).toBe("prod-1");
+      screen.queryByRole("button", { name: "Añadir al carrito" }),
+    ).not.toBeInTheDocument();
   });
 });

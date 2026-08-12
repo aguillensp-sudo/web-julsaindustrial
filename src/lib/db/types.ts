@@ -14,6 +14,12 @@ export type CustomerStatus =
 /** Release 1: dos estados, gestionados manualmente por el admin. */
 export type OrderStatus = "in_payment" | "ready_for_delivery";
 
+/** Cómo paga/pagó el cliente. */
+export type PaymentMethod = "bank_transfer" | "stripe" | "tropipay";
+
+/** Si el dinero ya entró, ortogonal a OrderStatus (que es logístico). */
+export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+
 export interface Product {
   id: string;
   line: ProductLine;
@@ -43,8 +49,11 @@ export interface Order {
   id: string;
   customer_id: string;
   status: OrderStatus;
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
   total_usd: number;
   notes: string | null;
+  tropipay_reference: string | null;
   created_at: string;
   updated_at: string;
 }

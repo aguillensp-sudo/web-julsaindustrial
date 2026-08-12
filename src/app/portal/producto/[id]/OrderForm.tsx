@@ -1,37 +1,60 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { createOrder, type CreateOrderResult } from "./orderActions";
+import { useCart } from "@/lib/cart/CartContext";
 
 /**
- * Formulario de pedido en la página de detalle de producto.
- * Usa useActionState para feedback inmediato del server action.
+ * Formulario de la página de detalle de producto: añade al carrito
+ * (no crea el pedido todavía — eso ocurre en /portal/checkout).
  */
-export function OrderForm({ productId }: { productId: string }) {
-  const [state, formAction, pending] = useActionState<
-    CreateOrderResult | null,
-    FormData
-  >(async (_prev, formData) => createOrder(formData), null);
+export function OrderForm({
+  productId,
+  name,
+  unitPrice,
+  stock,
+}: {
+  productId: string;
+  name: string;
+  unitPrice: number;
+  stock: number;
+}) {
+  const cart = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
 
-  if (state?.ok) {
+  if (stock <= 0) {
+    return (
+      <p className="text-sm text-amber-700 font-semibold" role="status">
+        Producto sin stock disponible.
+      </p>
+    );
+  }
+
+  function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    cart.add({ productId, name, unitPrice, quantity });
+    setAdded(true);
+  }
+
+  if (added) {
     return (
       <div className="rounded border border-green-600 bg-green-50 p-4" role="status">
-        <p className="font-bold text-green-800">Pedido creado.</p>
-        <p className="text-sm mt-1">
-          Para completarlo, suba su comprobante de pago en{" "}
-          <Link href="/portal/mis-pedidos" className="underline">
-            Mis pedidos
+        <p className="font-bold text-green-800">Añadido al carrito.</p>
+        <div className="text-sm mt-1 flex gap-3">
+          <Link href="/portal/carrito" className="underline">
+            Ver carrito
           </Link>
-          .
-        </p>
+          <Link href="/portal/catalogo" className="underline">
+            Seguir comprando
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <form action={formAction} className="space-y-3">
-      <input type="hidden" name="product_id" value={productId} />
+    <form onSubmit={handleAdd} className="space-y-3">
       <div>
         <label htmlFor="quantity" className="block text-sm font-semibold mb-1">
           Cantidad
@@ -41,33 +64,18 @@ export function OrderForm({ productId }: { productId: string }) {
           name="quantity"
           type="number"
           min={1}
-          defaultValue={1}
+          max={stock}
+          value={quantity}
+          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
           required
           className="w-24 rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
         />
       </div>
-      <div>
-        <label htmlFor="notes" className="block text-sm font-semibold mb-1">
-          Observaciones (opcional)
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          rows={2}
-          className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
-        />
-      </div>
-      {state && !state.ok && (
-        <p className="text-sm text-red-700" role="alert">
-          {state.error}
-        </p>
-      )}
       <button
         type="submit"
-        disabled={pending}
-        className="rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2 disabled:opacity-50"
+        className="rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2"
       >
-        {pending ? "Creando…" : "Crear pedido"}
+        Añadir al carrito
       </button>
     </form>
   );

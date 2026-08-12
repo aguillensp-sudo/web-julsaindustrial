@@ -41,6 +41,9 @@ async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Rutas de auth accesibles sin sesión (no se protegen).
+  // /portal/actualizar-password NO va aquí: es una página protegida normal
+  // (requiere sesión) — la sesión que la protege es justo la de recovery
+  // que /auth/callback acaba de crear tras el enlace del email.
   const isAuthRoute =
     path === "/portal/login" ||
     path === "/portal/registro" ||

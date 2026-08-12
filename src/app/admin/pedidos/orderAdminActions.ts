@@ -44,7 +44,7 @@ export async function markReadyForDelivery(orderId: string): Promise<MarkReadyRe
 
   const { data: order, error: fetchError } = await supabase
     .from("orders")
-    .select("status")
+    .select("status, payment_method, payment_status")
     .eq("id", parsed.data)
     .maybeSingle();
 
@@ -60,9 +60,19 @@ export async function markReadyForDelivery(orderId: string): Promise<MarkReadyRe
     return { ok: false, error: "No se puede cambiar el estado del pedido." };
   }
 
+  // Al aprobar un pedido pagado por transferencia (revisión de comprobante),
+  // este mismo clic salda también el pago; los pagados por Stripe ya llegan
+  // con payment_status='paid' vía webhook y no se tocan aquí.
+  const updates: { status: "ready_for_delivery"; payment_status?: "paid" } = {
+    status: "ready_for_delivery",
+  };
+  if (order.payment_method === "bank_transfer" && order.payment_status === "pending") {
+    updates.payment_status = "paid";
+  }
+
   const { error: updateError } = await supabase
     .from("orders")
-    .update({ status: "ready_for_delivery" })
+    .update(updates)
     .eq("id", parsed.data);
 
   if (updateError) {

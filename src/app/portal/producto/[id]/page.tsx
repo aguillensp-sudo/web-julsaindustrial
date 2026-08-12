@@ -63,7 +63,12 @@ export default async function ProductDetailPage({
           </div>
           <hr className="my-5 border-[var(--border)]" />
           <h2 className="font-bold mb-2">Hacer pedido</h2>
-          <OrderForm productId={product.id} />
+          <OrderForm
+            productId={product.id}
+            name={product.name}
+            unitPrice={Number(product.price_usd)}
+            stock={product.stock}
+          />
         </div>
       </div>
     </PortalShell>
