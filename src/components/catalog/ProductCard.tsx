@@ -1,14 +1,17 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import type { CatalogItem } from "@/lib/content/catalog";
 
 /**
  * Tarjeta de producto pública. Muestra imagen/icono + nombre + descripción +
  * especificaciones. NO muestra precio (privado, solo portal autenticado).
+ * Si `item.pageHref` está definido, la tarjeta completa es un enlace de
+ * navegación interna.
  */
 export function ProductCard({ item }: { item: CatalogItem }) {
-  return (
-    <Card className="flex flex-col transition-shadow hover:shadow-[0_4px_16px_var(--shadow)] hover:border-[var(--accent)]">
+  const cardContent = (
+    <Card className="flex flex-col h-full transition-shadow hover:shadow-[0_4px_16px_var(--shadow)] hover:border-[var(--accent)]">
       <div className="mb-3 aspect-[4/3] w-full rounded bg-[var(--bg)] flex items-center justify-center border border-[var(--border)] overflow-hidden relative">
         {item.visual === "image" && item.imageSrc ? (
           <Image
@@ -55,6 +58,20 @@ export function ProductCard({ item }: { item: CatalogItem }) {
       )}
     </Card>
   );
+
+  if (item.pageHref) {
+    return (
+      <Link
+        href={item.pageHref}
+        aria-label={`Ver ${item.name}`}
+        className="block h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded"
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }
 
 /** Marcador de foto (hasta que Alvaro aporte las imágenes reales). */

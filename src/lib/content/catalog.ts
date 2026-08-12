@@ -25,6 +25,8 @@ export interface CatalogItem {
   iconName?: string; // clave de icono si visual === "icon"
   imageSrc?: string; // ruta pública si visual === "image"
   links?: CatalogLink[]; // enlaces a fichas técnicas / catálogos PDF, abren en nueva pestaña
+  /** Enlace interno opcional: convierte la tarjeta completa en un link de navegación. */
+  pageHref?: string;
 }
 
 export const CATALOG: CatalogItem[] = [
@@ -125,7 +127,9 @@ export const CATALOG: CatalogItem[] = [
     line: "raw_materials",
     name: "Pulpa de celulosa",
     description: "Materia prima para la industria del papel.",
-    visual: "photo",
+    visual: "image",
+    imageSrc: "/images/pulpa1.png",
+    pageHref: "/materias-primas/pulpa-de-celulosa",
   },
   {
     slug: "electrodos-grafito",

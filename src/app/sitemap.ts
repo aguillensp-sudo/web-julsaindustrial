@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/equipamiento-energetico",
     "/autopartes",
     "/materias-primas",
+    "/materias-primas/pulpa-de-celulosa",
     "/contacto",
   ];
   return routes.map((route) => ({
