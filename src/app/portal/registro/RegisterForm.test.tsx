@@ -11,6 +11,10 @@ vi.mock("./registerActions", () => ({
   registerCustomer: mockRegisterCustomer,
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+
 vi.mock("@/lib/supabase/browser", () => ({
   createClient: () => ({
     auth: { signInWithPassword: mockSignInWithPassword },
