@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Menú hamburguesa de la cabecera en móvil (< md). El menú de escritorio se
@@ -80,13 +79,13 @@ export function MobileMenu({
                 </li>
               ))}
               <li className="mt-2 pt-3 border-t border-white/10">
-                <ComingSoonLink
+                <Link
                   href="/portal/login"
                   onClick={() => setOpen(false)}
                   className="block rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] px-3 py-3 text-center text-white font-bold no-underline"
                 >
                   Acceso clientes
-                </ComingSoonLink>
+                </Link>
               </li>
             </ul>
           </nav>

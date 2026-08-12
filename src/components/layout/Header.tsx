@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ComingSoonLink } from "@/components/ComingSoonLink";
 import Link from "next/link";
 import { MobileMenu } from "./MobileMenu";
 
@@ -46,12 +45,12 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <ComingSoonLink
+        <Link
           href="/portal/login"
           className="ml-auto hidden md:inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold text-sm px-4 py-1.5"
         >
           Acceso clientes
-        </ComingSoonLink>
+        </Link>
 
         <MobileMenu items={NAV} />
       </div>

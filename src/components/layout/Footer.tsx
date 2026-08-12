@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Pie en --ink. Contacto, mapa web, políticas y enlace al portal.
@@ -62,9 +61,9 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <ComingSoonLink href="/portal/login" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
+              <Link href="/portal/login" className="block px-1 py-1.5 text-white/80 hover:text-white no-underline">
                 Acceso clientes
-              </ComingSoonLink>
+              </Link>
             </li>
           </ul>
         </nav>

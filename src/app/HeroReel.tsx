@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ComingSoonLink } from "@/components/ComingSoonLink";
 
 /**
  * Hero reel de la Home (fase3-design §3.1).
@@ -59,12 +58,12 @@ export function HeroReel() {
             Importación y distribución de combustibles, materias primas,
             equipamiento energético y autopartes.
           </p>
-          <ComingSoonLink
+          <Link
             href="/portal/login"
             className="mt-6 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-5 py-2"
           >
             Acceso clientes →
-          </ComingSoonLink>
+          </Link>
         </div>
 
         {/* Slides temáticos (placeholder hasta fotos de Alvaro) */}

@@ -3,7 +3,6 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Section, SectionLabel, SectionTitle } from "@/components/ui/Section";
 import { Card } from "@/components/ui/Card";
-import { ComingSoonLink } from "@/components/ComingSoonLink";
 import { HeroReel } from "./HeroReel";
 import { LINE_META } from "@/lib/content/catalog";
 import type { ProductLine } from "@/lib/db/types";
@@ -80,12 +79,12 @@ export default function Home() {
               Cree su usuario y acceda a su área personal para poder adquirir
               nuestros productos.
             </p>
-            <ComingSoonLink
+            <Link
               href="/portal/registro"
               className="mt-3 inline-flex no-underline items-center rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white font-bold px-4 py-2"
             >
               Crear usuario →
-            </ComingSoonLink>
+            </Link>
           </Card>
         </Section>
       </main>
