@@ -60,9 +60,9 @@ export async function markReadyForDelivery(orderId: string): Promise<MarkReadyRe
     return { ok: false, error: "No se puede cambiar el estado del pedido." };
   }
 
-  // Al aprobar un pedido pagado por transferencia (revisión de comprobante),
-  // este mismo clic salda también el pago; los pagados por Stripe ya llegan
-  // con payment_status='paid' vía webhook y no se tocan aquí.
+  // Al aprobar un pedido pagado por transferencia (revisión del comprobante),
+  // este mismo clic salda también el pago; los pagados con tarjeta ya llegan
+  // con payment_status='paid' vía webhook de Stripe y no se tocan aquí.
   const updates: { status: "ready_for_delivery"; payment_status?: "paid" } = {
     status: "ready_for_delivery",
   };

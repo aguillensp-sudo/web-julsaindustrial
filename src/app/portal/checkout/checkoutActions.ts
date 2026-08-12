@@ -1,41 +1,51 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createOrderCheckoutSession } from "@/lib/stripe";
 
+/**
+ * Convierte el carrito del cliente (tabla cart_items) en UN pedido con tantas
+ * líneas como productos, y arranca el cobro según el método elegido.
+ *
+ * El carrito vive en la base de datos, no en el navegador: aquí se relee
+ * siempre desde Supabase, junto con el precio y el stock vigentes. Nada de lo
+ * que envía el cliente influye en el importe.
+ */
 const schema = z.object({
-  items: z
-    .array(
-      z.object({
-        productId: z.string().uuid(),
-        quantity: z.coerce.number().int().min(1).max(9999),
-      }),
-    )
-    .min(1, "El carrito está vacío"),
   paymentMethod: z.enum(["bank_transfer", "stripe", "tropipay"]),
   notes: z.string().max(2000).optional(),
 });
-
-export type CheckoutInput = z.infer<typeof schema>;
 
 export type CheckoutResult =
   | { ok: true; redirectTo: string }
   | { ok: false; error: string };
 
-export async function createOrderFromCart(input: CheckoutInput): Promise<CheckoutResult> {
-  const parsed = schema.safeParse(input);
-  if (!parsed.success) {
+type CartProduct = {
+  name: string;
+  price_usd: number;
+  stock: number;
+  is_active: boolean;
+};
+
+export async function createOrderFromCart(
+  formData: FormData,
+): Promise<CheckoutResult> {
+  const parsed = schema.safeParse({
+    paymentMethod: formData.get("paymentMethod"),
+    notes: (formData.get("notes") as string | null) || undefined,
+  });
+  if (!parsed.success)
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
-  }
-  const { items, paymentMethod, notes } = parsed.data;
+
+  const { paymentMethod, notes } = parsed.data;
 
   // TropiPay aún no está disponible; el radio ya viene deshabilitado en la UI,
   // esto es defensa en profundidad para no dejar pedidos huérfanos.
-  if (paymentMethod === "tropipay") {
+  if (paymentMethod === "tropipay")
     return { ok: false, error: "TropiPay aún no está disponible." };
-  }
 
   const supabase = await createClient();
   const {
@@ -43,25 +53,34 @@ export async function createOrderFromCart(input: CheckoutInput): Promise<Checkou
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Debe iniciar sesión." };
 
-  // Re-lee productos vigentes: nunca confiar en precios/stock del carrito local.
-  const productIds = items.map((i) => i.productId);
-  const { data: products, error: productsError } = await supabase
-    .from("products")
-    .select("id, name, price_usd, stock")
-    .in("id", productIds)
-    .eq("is_active", true);
+  const { data: cart } = await supabase
+    .from("cart_items")
+    .select("product_id, quantity, products(name, price_usd, stock, is_active)")
+    .eq("customer_id", user.id)
+    .order("created_at", { ascending: true });
 
-  if (productsError || !products || products.length !== productIds.length) {
-    return { ok: false, error: "Uno o más productos ya no están disponibles." };
-  }
+  if (!cart || cart.length === 0)
+    return { ok: false, error: "Su carrito está vacío." };
 
-  const productById = new Map(products.map((p) => [p.id, p]));
-  for (const item of items) {
-    const product = productById.get(item.productId);
-    if (!product) return { ok: false, error: "Producto no encontrado." };
-    if (product.stock < item.quantity) {
-      return { ok: false, error: `No hay stock suficiente de "${product.name}".` };
-    }
+  const lines = cart.map((row) => ({
+    productId: row.product_id,
+    quantity: row.quantity,
+    product: (Array.isArray(row.products) ? row.products[0] : row.products) as
+      | CartProduct
+      | undefined,
+  }));
+
+  for (const line of lines) {
+    if (!line.product || !line.product.is_active)
+      return {
+        ok: false,
+        error: "Un producto del carrito ya no está disponible. Revíselo.",
+      };
+    if (line.product.stock < line.quantity)
+      return {
+        ok: false,
+        error: `No hay stock suficiente de ${line.product.name}.`,
+      };
   }
 
   const { data: order, error: orderError } = await supabase
@@ -75,49 +94,61 @@ export async function createOrderFromCart(input: CheckoutInput): Promise<Checkou
     })
     .select("id")
     .single();
-
-  if (orderError || !order) {
+  if (orderError || !order)
     return { ok: false, error: "No se pudo crear el pedido." };
-  }
 
   const { error: itemsError } = await supabase.from("order_items").insert(
-    items.map((item) => ({
+    lines.map((line) => ({
       order_id: order.id,
-      product_id: item.productId,
-      quantity: item.quantity,
-      unit_price_usd: productById.get(item.productId)!.price_usd,
+      product_id: line.productId,
+      quantity: line.quantity,
+      // La DB sobrescribe el precio con el vigente (trigger de 0004).
+      unit_price_usd: 0,
     })),
   );
-
   if (itemsError) {
+    // Sin líneas el pedido no tiene sentido: se deshace para no dejar
+    // pedidos vacíos en "Mis pedidos".
+    await supabase.from("orders").delete().eq("id", order.id);
     return { ok: false, error: "No se pudieron añadir los productos al pedido." };
   }
 
-  if (paymentMethod === "bank_transfer") {
+  // Pedido creado: el carrito se vacía.
+  await supabase.from("cart_items").delete().eq("customer_id", user.id);
+
+  revalidatePath("/portal/carrito");
+  revalidatePath("/portal/mis-pedidos");
+  revalidatePath("/portal");
+
+  if (paymentMethod === "bank_transfer")
     return { ok: true, redirectTo: "/portal/mis-pedidos" };
-  }
 
   // paymentMethod === "stripe"
   const origin = (await headers()).get("origin") ?? "";
   try {
     const session = await createOrderCheckoutSession({
       orderId: order.id,
-      lineItems: items.map((item) => ({
-        name: productById.get(item.productId)!.name,
-        unitAmountCents: Math.round(Number(productById.get(item.productId)!.price_usd) * 100),
-        quantity: item.quantity,
+      lineItems: lines.map((line) => ({
+        name: line.product!.name,
+        unitAmountCents: Math.round(Number(line.product!.price_usd) * 100),
+        quantity: line.quantity,
       })),
       successUrl: `${origin}/portal/checkout/success?order_id=${order.id}`,
-      cancelUrl: `${origin}/portal/checkout?cancelled=1`,
+      cancelUrl: `${origin}/portal/mis-pedidos?pago=cancelado`,
       email: user.email,
     });
 
-    if (!session.url) {
+    if (!session.url)
       return { ok: false, error: "Stripe no devolvió una URL de pago." };
-    }
     return { ok: true, redirectTo: session.url };
   } catch (err) {
     console.error("Error creating Stripe checkout session:", err);
-    return { ok: false, error: "No se pudo iniciar el pago con tarjeta." };
+    // El pedido queda creado y pendiente de pago: el cliente puede reintentar
+    // el cobro desde "Mis pedidos" sin perder la compra.
+    return {
+      ok: false,
+      error:
+        "El pedido se creó, pero no se pudo iniciar el pago con tarjeta. Reinténtelo desde Mis pedidos.",
+    };
   }
 }

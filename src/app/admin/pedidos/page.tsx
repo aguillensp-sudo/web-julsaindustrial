@@ -1,6 +1,12 @@
 import { Card } from "@/components/ui/Card";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ORDER_STATUS_LABEL } from "@/lib/db/types";
+import {
+  ORDER_STATUS_LABEL,
+  PAYMENT_METHOD_LABEL,
+  PAYMENT_STATUS_LABEL,
+  type PaymentMethod,
+  type PaymentStatus,
+} from "@/lib/db/types";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +14,8 @@ export const dynamic = "force-dynamic";
 type OrderWithCustomer = {
   id: string;
   status: keyof typeof ORDER_STATUS_LABEL;
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
   total_usd: number;
   created_at: string;
   customers: { company_name: string; contact_name: string } | { company_name: string; contact_name: string }[] | null;
@@ -18,8 +26,17 @@ export default async function AdminPedidosPage() {
 
   const { data: orders, error } = await supabase
     .from("orders")
-    .select("id, status, total_usd, created_at, customers(company_name, contact_name)")
+    .select(
+      "id, status, payment_method, payment_status, total_usd, created_at, customers(company_name, contact_name)",
+    )
     .order("created_at", { ascending: false });
+
+  // Comprobantes subidos por los clientes, para señalar en el listado qué
+  // pedidos ya traen adjunto sin tener que entrar al detalle.
+  const { data: proofs } = await supabase
+    .from("payment_proofs")
+    .select("order_id");
+  const withProof = new Set((proofs ?? []).map((p) => p.order_id));
 
   if (error) {
     return (
@@ -70,6 +87,28 @@ export default async function AdminPedidosPage() {
                     }`}
                   >
                     {ORDER_STATUS_LABEL[order.status]}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {PAYMENT_METHOD_LABEL[order.payment_method] ?? "Transferencia"}
+                    {" · "}
+                    <span
+                      className={
+                        order.payment_status === "paid"
+                          ? "text-green-700 font-medium"
+                          : "text-amber-700 font-medium"
+                      }
+                    >
+                      {PAYMENT_STATUS_LABEL[order.payment_status] ?? "Pago pendiente"}
+                    </span>
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${
+                      withProof.has(order.id) ? "text-green-700" : "text-gray-500"
+                    }`}
+                  >
+                    {withProof.has(order.id)
+                      ? "Comprobante adjunto ✓"
+                      : "Sin comprobante"}
                   </span>
                   <Link
                     href={`/admin/pedidos/${order.id}`}

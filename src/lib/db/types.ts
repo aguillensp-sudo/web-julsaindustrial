@@ -79,3 +79,17 @@ export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   in_payment: "En proceso de pago",
   ready_for_delivery: "Disponible para entrega",
 };
+
+/** Etiquetas de UI para el pago. */
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  bank_transfer: "Transferencia",
+  stripe: "Tarjeta",
+  tropipay: "TropiPay",
+};
+
+export const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
+  pending: "Pago pendiente",
+  paid: "Pagado",
+  failed: "Pago fallido",
+  refunded: "Reembolsado",
+};

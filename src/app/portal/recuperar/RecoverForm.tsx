@@ -13,7 +13,7 @@ export function RecoverForm() {
     event.preventDefault();
     setLoading(true);
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/portal/actualizar-password`,
+      redirectTo: `${window.location.origin}/auth/callback?next=/portal/restablecer`,
     });
     setLoading(false);
     setDone(true);

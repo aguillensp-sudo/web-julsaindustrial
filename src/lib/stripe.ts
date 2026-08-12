@@ -1,8 +1,20 @@
 import Stripe from 'stripe';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-07-29.dahlia',
-});
+/**
+ * Cliente de Stripe perezoso: instanciarlo al importar el módulo rompe el
+ * build cuando STRIPE_SECRET_KEY no está definida (por ejemplo en un preview
+ * sin las claves configuradas). Se crea en la primera llamada real y se
+ * reutiliza después.
+ */
+let client: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (client) return client;
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  if (!apiKey) throw new Error('STRIPE_SECRET_KEY no está configurada.');
+  client = new Stripe(apiKey, { apiVersion: '2026-07-29.dahlia' });
+  return client;
+}
 
 export async function createCheckoutSession({
   priceId,
@@ -17,7 +29,7 @@ export async function createCheckoutSession({
   email?: string;
   metadata?: Record<string, string>;
 }) {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: [
@@ -50,7 +62,7 @@ export async function createSubscriptionSession({
   trialDays?: number;
   metadata?: Record<string, string>;
 }) {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [
@@ -88,7 +100,7 @@ export async function createOrderCheckoutSession({
   cancelUrl: string;
   email?: string;
 }) {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: lineItems.map((li) => ({
@@ -110,7 +122,7 @@ export async function createOrderCheckoutSession({
 }
 
 export async function getCustomer(customerId: string) {
-  return await stripe.customers.retrieve(customerId);
+  return await getStripe().customers.retrieve(customerId);
 }
 
 export async function createCustomer({
@@ -122,7 +134,7 @@ export async function createCustomer({
   name?: string;
   metadata?: Record<string, string>;
 }) {
-  return await stripe.customers.create({
+  return await getStripe().customers.create({
     email,
     name,
     metadata,
@@ -130,7 +142,7 @@ export async function createCustomer({
 }
 
 export async function refundPayment(chargeId: string, amount?: number) {
-  return await stripe.refunds.create({
+  return await getStripe().refunds.create({
     charge: chargeId,
     amount,
   });

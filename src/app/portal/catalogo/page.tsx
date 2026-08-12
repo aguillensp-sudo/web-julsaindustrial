@@ -37,7 +37,7 @@ export default async function CatalogoPage() {
 
   return (
     <PortalShell>
-      <h1 className="text-2xl font-bold">Catálogo y precios</h1>
+      <h1 className="text-2xl font-bold">Tienda</h1>
       <p className="text-sm mt-1 text-[var(--text)]/70">
         Precios en USD. Stock en tiempo real gestionado por Julsa.
       </p>
@@ -56,7 +56,10 @@ export default async function CatalogoPage() {
                   key={p.id}
                   className="bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_4px_var(--shadow)] rounded p-4 hover:border-[var(--accent)] flex flex-col"
                 >
-                  <Link href={`/portal/producto/${p.id}`} className="no-underline">
+                  <Link
+                    href={`/portal/producto/${p.id}`}
+                    className="no-underline flex-1 flex flex-col"
+                  >
                     <h3 className="font-bold text-[var(--text)]">{p.name}</h3>
                     <p className="text-sm mt-1 flex-1">{p.description}</p>
                     <div className="mt-3 flex items-end justify-between">
@@ -72,12 +75,7 @@ export default async function CatalogoPage() {
                       </span>
                     </div>
                   </Link>
-                  <AddToCartButton
-                    productId={p.id}
-                    name={p.name}
-                    unitPrice={Number(p.price_usd)}
-                    disabled={p.stock <= 0}
-                  />
+                  <AddToCartButton productId={p.id} disabled={p.stock <= 0} />
                 </div>
               ))}
             </div>

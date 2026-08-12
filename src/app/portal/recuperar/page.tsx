@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RecuperarPage() {
   return (
-    <PortalShell>
+    <PortalShell showNav={false}>
       <div className="max-w-sm mx-auto bg-[var(--surface)] border border-[var(--border)] shadow-[0_1px_4px_var(--shadow)] rounded p-6">
         <h1 className="text-2xl font-bold mb-1">Recuperar contraseña</h1>
         <p className="text-sm mb-4">

@@ -17,23 +17,30 @@ describe("HeroReel", () => {
     vi.useRealTimers();
   });
 
-  it("renders 3 tabs with the first one selected", () => {
+  it("renders one tab per slide with the first one selected", () => {
     render(<HeroReel />);
 
     const tabs = screen.getAllByRole("tab");
-    expect(tabs).toHaveLength(3);
+    expect(tabs.map((tab) => tab.getAttribute("aria-label"))).toEqual([
+      "Combustibles",
+      "Equipamientos energéticos",
+      "Autopartes",
+      "Materias primas",
+    ]);
     expect(screen.getByRole("tab", { name: "Combustibles" })).toHaveAttribute(
       "aria-selected",
       "true"
     );
-    expect(screen.getByRole("tab", { name: "Energía solar" })).toHaveAttribute(
-      "aria-selected",
-      "false"
-    );
-    expect(screen.getByRole("tab", { name: "Materias primas" })).toHaveAttribute(
-      "aria-selected",
-      "false"
-    );
+    for (const name of [
+      "Equipamientos energéticos",
+      "Autopartes",
+      "Materias primas",
+    ]) {
+      expect(screen.getByRole("tab", { name })).toHaveAttribute(
+        "aria-selected",
+        "false"
+      );
+    }
   });
 
   it("changes selected tab on click", () => {
@@ -63,10 +70,9 @@ describe("HeroReel", () => {
       vi.advanceTimersByTime(5000);
     });
 
-    expect(screen.getByRole("tab", { name: "Energía solar" })).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
+    expect(
+      screen.getByRole("tab", { name: "Equipamientos energéticos" })
+    ).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "Combustibles" })).toHaveAttribute(
       "aria-selected",
       "false"

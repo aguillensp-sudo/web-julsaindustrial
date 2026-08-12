@@ -39,3 +39,4 @@ _source/
 _work/
 
 .vercel
+tsconfig.tsbuildinfo

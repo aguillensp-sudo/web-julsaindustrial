@@ -1,38 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { useCart } from "@/lib/cart/CartContext";
+import { useActionState } from "react";
+import { addToCart, type CartActionResult } from "../carrito/cartActions";
 
+/**
+ * Añadir al carrito desde la tarjeta del catálogo, sin entrar en la ficha.
+ * Guarda en cart_items (servidor), no en el navegador.
+ */
 export function AddToCartButton({
   productId,
-  name,
-  unitPrice,
   disabled,
 }: {
   productId: string;
-  name: string;
-  unitPrice: number;
   disabled?: boolean;
 }) {
-  const cart = useCart();
-  const [added, setAdded] = useState(false);
-
-  function handleClick(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    cart.add({ productId, name, unitPrice, quantity: 1 });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  }
+  const [state, formAction, pending] = useActionState<
+    CartActionResult | null,
+    FormData
+  >(async (_prev, formData) => addToCart(formData), null);
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={disabled}
-      className="mt-2 w-full rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white text-sm font-bold px-3 py-1.5 disabled:opacity-50"
-    >
-      {added ? "Añadido ✓" : "Añadir al carrito"}
-    </button>
+    <form action={formAction} className="mt-2">
+      <input type="hidden" name="product_id" value={productId} />
+      <input type="hidden" name="quantity" value="1" />
+      <button
+        type="submit"
+        disabled={disabled || pending}
+        className="w-full rounded bg-[var(--accent-deep)] hover:bg-[var(--accent-deeper)] text-white text-sm font-bold px-3 py-1.5 disabled:opacity-50"
+      >
+        {pending ? "Añadiendo…" : state?.ok ? "Añadido ✓" : "Añadir al carrito"}
+      </button>
+      {state && !state.ok && (
+        <p className="text-xs text-red-700 mt-1" role="alert">
+          {state.error}
+        </p>
+      )}
+    </form>
   );
 }

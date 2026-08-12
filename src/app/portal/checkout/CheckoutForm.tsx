@@ -1,109 +1,83 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/lib/cart/CartContext";
-import { createOrderFromCart } from "./checkoutActions";
+import { createOrderFromCart, type CheckoutResult } from "./checkoutActions";
+import { CardBrands } from "@/components/ui/CardBrands";
 
-type PaymentMethod = "bank_transfer" | "stripe" | "tropipay";
-
-export function CheckoutForm() {
-  const cart = useCart();
+/**
+ * Finalizar pedido: resumen del carrito (leído en servidor), método de pago y
+ * confirmación. El importe que se cobra lo recalcula el servidor desde
+ * cart_items; este resumen es informativo.
+ */
+export function CheckoutForm({
+  items,
+  total,
+}: {
+  items: { name: string; quantity: number; lineTotal: number }[];
+  total: number;
+}) {
   const router = useRouter();
-  const [method, setMethod] = useState<PaymentMethod>("bank_transfer");
-  const [notes, setNotes] = useState("");
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [state, formAction, pending] = useActionState<
+    CheckoutResult | null,
+    FormData
+  >(async (_prev, formData) => createOrderFromCart(formData), null);
 
-  if (cart.items.length === 0) {
-    return (
-      <div className="mt-6 p-6 rounded border border-[var(--border)] bg-[var(--surface)] text-sm">
-        Tu carrito está vacío.{" "}
-        <Link href="/portal/catalogo" className="underline">
-          Ver catálogo
-        </Link>
-        .
-      </div>
-    );
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setPending(true);
-    setError(null);
-
-    const result = await createOrderFromCart({
-      items: cart.items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-      paymentMethod: method,
-      notes: notes || undefined,
-    });
-
-    if (!result.ok) {
-      setError(result.error);
-      setPending(false);
-      return;
-    }
-
-    cart.clear();
-
-    if (result.redirectTo.startsWith("http")) {
-      window.location.href = result.redirectTo;
+  useEffect(() => {
+    if (!state?.ok) return;
+    if (state.redirectTo.startsWith("http")) {
+      window.location.href = state.redirectTo;
     } else {
-      router.push(result.redirectTo);
+      router.push(state.redirectTo);
     }
-  }
+  }, [state, router]);
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+    <form action={formAction} className="mt-6 space-y-6">
       <div className="p-4 rounded border border-[var(--border)] bg-[var(--surface)]">
         <h2 className="font-bold mb-2">Resumen</h2>
         <ul className="text-sm space-y-1">
-          {cart.items.map((item) => (
-            <li key={item.productId} className="flex justify-between">
+          {items.map((item) => (
+            <li key={item.name} className="flex justify-between">
               <span>
                 {item.name} × {item.quantity}
               </span>
-              <span>USD {(item.unitPrice * item.quantity).toFixed(2)}</span>
+              <span>USD {item.lineTotal.toFixed(2)}</span>
             </li>
           ))}
         </ul>
         <div className="flex justify-between mt-3 pt-3 border-t border-[var(--border)] font-bold">
           <span>Total</span>
-          <span>USD {cart.subtotal.toFixed(2)}</span>
+          <span>USD {total.toFixed(2)}</span>
         </div>
       </div>
 
-      <div>
-        <h2 className="font-bold mb-2">Método de pago</h2>
+      <fieldset>
+        <legend className="font-bold mb-2">Método de pago</legend>
         <div className="space-y-2">
           <label className="flex items-center gap-2 p-3 rounded border border-[var(--border)] bg-[var(--surface)] cursor-pointer">
             <input
               type="radio"
               name="paymentMethod"
               value="bank_transfer"
-              checked={method === "bank_transfer"}
-              onChange={() => setMethod("bank_transfer")}
+              defaultChecked
             />
             <div>
               <p className="font-semibold">Transferencia bancaria</p>
               <p className="text-xs text-[var(--text)]/70">
-                Sube tu comprobante después de confirmar.
+                Suba su comprobante después de confirmar.
               </p>
             </div>
           </label>
 
           <label className="flex items-center gap-2 p-3 rounded border border-[var(--border)] bg-[var(--surface)] cursor-pointer">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="stripe"
-              checked={method === "stripe"}
-              onChange={() => setMethod("stripe")}
-            />
+            <input type="radio" name="paymentMethod" value="stripe" />
             <div>
-              <p className="font-semibold">Tarjeta (Stripe)</p>
-              <p className="text-xs text-[var(--text)]/70">Pago inmediato con tarjeta.</p>
+              <p className="font-semibold">Pago con tarjeta</p>
+              <p className="text-xs text-[var(--text)]/70">
+                Pago inmediato y seguro a través de Stripe.
+              </p>
+              <CardBrands className="mt-1.5" />
             </div>
           </label>
 
@@ -116,7 +90,7 @@ export function CheckoutForm() {
             </div>
           </label>
         </div>
-      </div>
+      </fieldset>
 
       <div>
         <label htmlFor="notes" className="block text-sm font-semibold mb-1">
@@ -124,16 +98,15 @@ export function CheckoutForm() {
         </label>
         <textarea
           id="notes"
+          name="notes"
           rows={2}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
           className="w-full rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-2 focus:border-[var(--accent)]"
         />
       </div>
 
-      {error && (
+      {state && !state.ok && (
         <p className="text-sm text-red-700" role="alert">
-          {error}
+          {state.error}
         </p>
       )}
 

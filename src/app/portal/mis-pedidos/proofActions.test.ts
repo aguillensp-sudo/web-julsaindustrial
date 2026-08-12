@@ -168,6 +168,9 @@ describe("uploadProof", () => {
       }
       if (table === "payment_proofs") {
         return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
           insert: vi.fn().mockResolvedValue({ error: { message: "fail" } }),
         };
       }
@@ -205,6 +208,9 @@ describe("uploadProof", () => {
       }
       if (table === "payment_proofs") {
         return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
           insert: vi.fn().mockResolvedValue({ error: null }),
         };
       }
