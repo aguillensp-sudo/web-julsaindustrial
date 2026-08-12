@@ -1,47 +1,39 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { RegisterForm } from "./RegisterForm";
 
-const { mockSignUp } = vi.hoisted(() => ({
-  mockSignUp: vi.fn(),
+const { mockRegisterCustomer, mockSignInWithPassword } = vi.hoisted(() => ({
+  mockRegisterCustomer: vi.fn(),
+  mockSignInWithPassword: vi.fn(),
+}));
+
+vi.mock("./registerActions", () => ({
+  registerCustomer: mockRegisterCustomer,
 }));
 
 vi.mock("@/lib/supabase/browser", () => ({
   createClient: () => ({
-    auth: {
-      signUp: mockSignUp,
-    },
+    auth: { signInWithPassword: mockSignInWithPassword },
   }),
 }));
 
 describe("RegisterForm", () => {
   beforeEach(() => {
-    mockSignUp.mockReset();
+    vi.clearAllMocks();
+    mockRegisterCustomer.mockResolvedValue({ ok: true });
+    mockSignInWithPassword.mockResolvedValue({ error: null });
   });
 
   const fillForm = (container: HTMLElement, password: string) => {
     const inputs = container.querySelectorAll("input");
-    fireEvent.change(inputs[0], {
-      target: { value: "Empresa Test" },
-    });
-    fireEvent.change(inputs[1], {
-      target: { value: "Juan Pérez" },
-    });
-    fireEvent.change(inputs[2], {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.change(inputs[3], {
-      target: { value: "555-1234" },
-    });
-    fireEvent.change(inputs[4], {
-      target: { value: "Madrid" },
-    });
-    fireEvent.change(inputs[5], {
-      target: { value: password },
-    });
+    fireEvent.change(inputs[0], { target: { value: "Empresa Test" } });
+    fireEvent.change(inputs[1], { target: { value: "Juan Pérez" } });
+    fireEvent.change(inputs[2], { target: { value: "test@example.com" } });
+    fireEvent.change(inputs[3], { target: { value: "555-1234" } });
+    fireEvent.change(inputs[5], { target: { value: password } });
   };
 
-  it("keeps the submit button disabled with a short password", async () => {
+  it("keeps the submit button disabled with a short password", () => {
     const { container } = render(<RegisterForm />);
     fillForm(container, "short");
 
@@ -49,7 +41,7 @@ describe("RegisterForm", () => {
     expect(button).toBeDisabled();
 
     fireEvent.click(button);
-    expect(mockSignUp).not.toHaveBeenCalled();
+    expect(mockRegisterCustomer).not.toHaveBeenCalled();
   });
 
   it("keeps the submit button disabled until the required fields are valid", () => {
@@ -68,96 +60,64 @@ describe("RegisterForm", () => {
     fireEvent.change(inputs[2], { target: { value: "no-es-un-email" } });
     expect(button).toBeDisabled();
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "Introduzca un email válido"
+      "Introduzca un email válido",
     );
 
     fireEvent.change(inputs[2], { target: { value: "test@example.com" } });
     expect(button).toBeEnabled();
   });
 
-  it("does not render the location field but still sends it to Supabase", async () => {
-    mockSignUp.mockResolvedValue({ data: { user: {} }, error: null });
-
+  it("does not render the location field but still sends it to the server", async () => {
     const { container } = render(<RegisterForm />);
     expect(container.querySelector('input[name="location"]')).toHaveAttribute(
       "type",
-      "hidden"
+      "hidden",
     );
 
     fillForm(container, "password123");
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
-    await screen.findByRole("status");
 
-    expect(mockSignUp).toHaveBeenCalledWith(
-      expect.objectContaining({
-        options: expect.objectContaining({
-          data: expect.objectContaining({
-            phone: "555-1234",
-            location: "",
-          }),
-        }),
-      })
+    await waitFor(() => expect(mockRegisterCustomer).toHaveBeenCalled());
+    const formData = mockRegisterCustomer.mock.calls[0][0] as FormData;
+    expect(formData.get("company_name")).toBe("Empresa Test");
+    expect(formData.get("phone")).toBe("555-1234");
+    expect(formData.get("location")).toBe("");
+  });
+
+  it("signs the customer in right after creating the account", async () => {
+    const { container } = render(<RegisterForm />);
+    fillForm(container, "password123");
+
+    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+
+    await waitFor(() =>
+      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      }),
     );
   });
 
-  it("maps 'already registered' error to existing account message", async () => {
-    mockSignUp.mockResolvedValue({
-      data: {},
-      error: { message: "User already registered" },
+  it("shows the server error when the account cannot be created", async () => {
+    mockRegisterCustomer.mockResolvedValue({
+      ok: false,
+      error: "Ya existe una cuenta con ese email.",
     });
 
     const { container } = render(<RegisterForm />);
     fillForm(container, "password123");
-
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("Ya existe una cuenta con ese email.");
+    expect(mockSignInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("maps 'Password' error to requirements message", async () => {
-    mockSignUp.mockResolvedValue({
-      data: {},
-      error: { message: "Password should be at least 8 characters" },
-    });
+  it("falls back to the login link when the automatic sign-in fails", async () => {
+    mockSignInWithPassword.mockResolvedValue({ error: { message: "boom" } });
 
     const { container } = render(<RegisterForm />);
     fillForm(container, "password123");
-
-    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
-
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(
-      "La contraseña no cumple los requisitos."
-    );
-  });
-
-  it("maps generic error to generic message", async () => {
-    mockSignUp.mockResolvedValue({
-      data: {},
-      error: { message: "network error" },
-    });
-
-    const { container } = render(<RegisterForm />);
-    fillForm(container, "password123");
-
-    fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
-
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(
-      "No se pudo crear la cuenta. Inténtelo de nuevo."
-    );
-  });
-
-  it("shows status and removes form on successful signUp", async () => {
-    mockSignUp.mockResolvedValue({
-      data: { user: {} },
-      error: null,
-    });
-
-    const { container } = render(<RegisterForm />);
-    fillForm(container, "password123");
-
     fireEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
 
     const status = await screen.findByRole("status");

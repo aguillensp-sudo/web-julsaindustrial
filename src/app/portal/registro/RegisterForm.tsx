@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
+import { registerCustomer } from "./registerActions";
 
 /**
  * Registro de cliente. Auto-registro con verificación de email.
@@ -13,12 +15,15 @@ import { createClient } from "@/lib/supabase/browser";
  * El campo "Ubicación / sede" está oculto de momento (se sigue enviando a
  * Supabase, vacío, para no romper el flujo cuando se reactive).
  *
- * Tras signup, Supabase envía email de confirmación; el enlace apunta a
- * /auth/callback, que canjea el código y deja al usuario dentro del portal.
+ * El alta la hace un server action con la clave de servicio: el auto-registro
+ * por email dependía del correo de confirmación de Supabase, limitado a unos
+ * pocos envíos por hora, y fallaba en producción. Creada la cuenta, se inicia
+ * sesión con las mismas credenciales y se entra directo al portal.
  */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
 export function RegisterForm() {
+  const router = useRouter();
   const supabase = createClient();
   const [form, setForm] = useState({
     company_name: "",
@@ -55,25 +60,35 @@ export function RegisterForm() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: form.email.trim(),
-      password: form.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/portal`,
-        data: {
-          company_name: form.company_name.trim(),
-          contact_name: form.contact_name.trim(),
-          phone: form.phone.trim(),
-          location: form.location.trim(),
-        },
-      },
-    });
-    setLoading(false);
-    if (error) {
-      setError(translateError(error.message));
+
+    const formData = new FormData();
+    formData.set("company_name", form.company_name);
+    formData.set("contact_name", form.contact_name);
+    formData.set("email", form.email);
+    formData.set("password", form.password);
+    formData.set("phone", form.phone);
+    formData.set("location", form.location);
+
+    const result = await registerCustomer(formData);
+    if (!result.ok) {
+      setLoading(false);
+      setError(result.error);
       return;
     }
-    setDone(true);
+
+    // Cuenta creada: se entra directamente con las credenciales recién dadas.
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: form.email.trim(),
+      password: form.password,
+    });
+    setLoading(false);
+    if (signInError) {
+      // La cuenta existe; solo falló el acceso automático.
+      setDone(true);
+      return;
+    }
+    router.push("/portal");
+    router.refresh();
   }
 
   if (done) {
@@ -81,9 +96,11 @@ export function RegisterForm() {
       <div className="space-y-3" role="status">
         <p className="font-bold text-green-700">Cuenta creada.</p>
         <p className="text-sm">
-          Le hemos enviado un email de confirmación. Haga clic en el enlace del
-          correo para activar su cuenta y acceder al portal.
+          Ya puede acceder al portal con su email y su contraseña.
         </p>
+        <a href="/portal/login" className="text-[15px] no-underline">
+          Ir a acceder →
+        </a>
       </div>
     );
   }
@@ -198,11 +215,4 @@ function Field({
       )}
     </div>
   );
-}
-
-function translateError(message: string): string {
-  if (message.includes("already registered") || message.includes("already been"))
-    return "Ya existe una cuenta con ese email.";
-  if (message.includes("Password")) return "La contraseña no cumple los requisitos.";
-  return "No se pudo crear la cuenta. Inténtelo de nuevo.";
 }
