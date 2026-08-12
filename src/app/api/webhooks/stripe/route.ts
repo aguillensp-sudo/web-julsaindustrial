@@ -2,18 +2,20 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getStripe } from '@/lib/stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-07-29.dahlia',
-});
-
-const supabase = createAdminClient();
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+// Cliente de Supabase perezoso por el mismo motivo que el de Stripe: crearlo
+// al importar el módulo exige que las claves existan ya en tiempo de build.
+let adminClient: ReturnType<typeof createAdminClient> | null = null;
+function supabaseAdmin() {
+  adminClient ??= createAdminClient();
+  return adminClient;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = (await headers()).get('stripe-signature');
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
     return NextResponse.json(
@@ -25,7 +27,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('Webhook verification failed:', message);
@@ -84,7 +86,7 @@ async function handlePaymentSuccess(session: Stripe.Checkout.Session) {
 
   const orderId = session.client_reference_id ?? session.metadata?.order_id ?? null;
 
-  const { error } = await supabase.from('stripe_transactions').insert({
+  const { error } = await supabaseAdmin().from('stripe_transactions').insert({
     stripe_session_id: session.id,
     stripe_customer_id: session.customer,
     stripe_payment_intent_id: session.payment_intent?.toString(),
@@ -108,7 +110,7 @@ async function handlePaymentSuccess(session: Stripe.Checkout.Session) {
   }
 
   // Filtro por payment_status='pending' hace el update idempotente ante reintentos.
-  const { error: orderError } = await supabase
+  const { error: orderError } = await supabaseAdmin()
     .from('orders')
     .update({ payment_status: 'paid' })
     .eq('id', orderId)
@@ -122,7 +124,7 @@ async function handlePaymentSuccess(session: Stripe.Checkout.Session) {
 async function handlePaymentFailure(paymentIntent: Stripe.PaymentIntent) {
   console.log('❌ Payment failed:', paymentIntent.id);
 
-  const { error } = await supabase.from('stripe_transactions').insert({
+  const { error } = await supabaseAdmin().from('stripe_transactions').insert({
     stripe_session_id: paymentIntent.id,
     stripe_customer_id: paymentIntent.customer?.toString(),
     stripe_payment_intent_id: paymentIntent.id,
@@ -143,7 +145,7 @@ async function handleRefund(charge: Stripe.Charge) {
 
   const paymentIntentId = charge.payment_intent?.toString();
 
-  const { data: transaction, error: fetchError } = await supabase
+  const { data: transaction, error: fetchError } = await supabaseAdmin()
     .from('stripe_transactions')
     .update({ status: 'refunded', refunded_at: new Date().toISOString() })
     .eq('stripe_payment_intent_id', paymentIntentId)
@@ -156,7 +158,7 @@ async function handleRefund(charge: Stripe.Charge) {
   }
 
   if (transaction?.order_id) {
-    const { error: orderError } = await supabase
+    const { error: orderError } = await supabaseAdmin()
       .from('orders')
       .update({ payment_status: 'refunded' })
       .eq('id', transaction.order_id);
@@ -172,7 +174,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   const item = subscription.items.data[0];
 
-  const { error } = await supabase.from('stripe_subscriptions').upsert(
+  const { error } = await supabaseAdmin().from('stripe_subscriptions').upsert(
     {
       stripe_subscription_id: subscription.id,
       stripe_customer_id: subscription.customer?.toString(),
@@ -192,7 +194,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 async function handleSubscriptionCancelled(subscription: Stripe.Subscription) {
   console.log('❌ Subscription cancelled:', subscription.id);
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin()
     .from('stripe_subscriptions')
     .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
     .eq('stripe_subscription_id', subscription.id);
