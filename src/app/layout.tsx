@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
+import { GoogleAnalytics } from "@/components/layout/GoogleAnalytics";
 import "./globals.css";
 
 // Tipografía del brief: Open Sans como única familia (fase3-design §1).
@@ -69,6 +70,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
         {children}
+        <GoogleAnalytics />
       </body>
     </html>
   );
