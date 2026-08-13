@@ -1,8 +1,19 @@
+"use client";
+
 import Script from "next/script";
+import { usePathname } from "next/navigation";
 
 const GA_ID = "G-DCM6891W8G";
 
+const EXCLUDED_PREFIXES = ["/portal", "/admin"];
+
 export function GoogleAnalytics() {
+  const pathname = usePathname();
+
+  if (EXCLUDED_PREFIXES.some((p) => pathname?.startsWith(p))) {
+    return null;
+  }
+
   return (
     <>
       <Script
